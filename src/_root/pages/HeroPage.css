@@ -1,0 +1,212 @@
+.App {
+    position: relative;
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+.background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: opacity 1s ease-in-out;
+    z-index: -1;
+}
+
+.fade-in {
+    opacity: 1;
+}
+
+.fade-out {
+    opacity: 0;
+}
+.login {
+    position: relative;
+    font-size: 15px;
+    line-height: 32px;
+    font-weight: 600;
+    font-family: var(--font-poppins);
+    color: #fff;
+    text-align: left;
+}
+.next {
+    cursor: pointer;
+    border: 0;
+    padding: 0;
+    background-color: transparent;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+.chevronRightIcon {
+    height: 33px;
+    width: 33px;
+    position: relative;
+}
+.icon {
+    flex-direction: row;
+    justify-content: flex-start;
+}
+.icon,
+.nextBtn,
+.nextIcon {
+    display: flex;
+    align-items: flex-start;
+}
+.nextIcon {
+    align-self: stretch;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.nextIcons {
+    align-self: stretch;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.nextBtn {
+    position: absolute; /* Adjusted for positioning */
+    top: 45px; /* Align to the top */
+    right: 45px; /* Align to the right */
+    margin: 10px; /* Add some margin to avoid sticking to the corner */
+    width: 120px; /* Width specified */
+    height: 49px; /* Height specified */
+    border-radius: 20px;
+    background-color: rgba(18, 55, 42, 0.8);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    flex-direction: column;
+    justify-content: center; /* Adjusted for vertical centering */
+    padding: 18px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+.searchBar {
+    position: absolute; /* Adjusted for positioning */
+    top: 45px; /* Align to the top */
+    right: 45px; /* Align to the right */
+    margin: 10px; /* Add some margin to avoid sticking to the corner */
+    width: 120px; /* Width specified */
+    height: 49px; /* Height specified */
+    border-radius: 20px;
+    background-color: rgba(18, 55, 42, 0.445);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    flex-direction: column;
+    justify-content: center; /* Adjusted for vertical centering */
+    padding: 8px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.searchBarText {
+    position: relative;
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 400;
+    left: 55px;
+    font-family: var(--font-poppins);
+    color: #ffffffc7;
+    text-align: left;
+}
+
+.searchBarIcon {
+    position: relative; /* This makes it a reference point for absolutely positioned children */
+    height: 100%; /* Ensure it has a defined height */
+    display: flex;
+    align-items: center; /* This will vertically center the img if it's smaller than the parent */
+}
+
+.searchBarIcon img {
+    position: relative;
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+    left: 10px;
+    bottom: 30px; /* Align to the left edge of .searchBarIcon */
+    /* Use 'right: 0;' to align to the right edge */
+    /* Adjust 'top' as necessary to vertically position */
+}
+
+.unlockYourInnerContainer {
+    height: 250px;
+    flex: 1;
+    position: relative;
+    line-height: 10px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    max-width: 100%; 
+}
+.containerCulinary,
+.unlockText {
+    
+    justify-content: flex-start;
+    max-width: 100%;
+    
+}
+.unlockText {
+    position: relative; /* Adjusts the position relative to its normal position */
+    top: 5px; /* Move down from its normal position */
+    right: 360px; /* Move right from its normal position */
+    height: 198px;
+    width: 649px;
+    font-size: 20px;
+    line-height: 32px;
+    font-weight: 600;
+    font-family: var(--font-poppins);
+    color: #fdfdfdcc;
+    text-align: left;
+    flex-shrink: 0;
+    padding-left: 20px;
+    padding-bottom: 20px;
+}
+.unlockText p {
+    margin-bottom: 16px; /* Adjusts space between paragraphs */
+}
+.containerCulinary {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+}
+.containerCulinaryWrapper,
+.heroPage {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    box-sizing: border-box;
+}
+.containerCulinaryWrapper {
+    width: 854px;
+    flex-direction: row;
+    padding: 0 17px;
+    max-width: 100%;
+}
+.aboutUs,
+.blog,
+.developers {
+    position: relative;
+    letter-spacing: 0.03em;
+    font-weight: 500;
+}
+.aboutUsParent {
+    position: absolute; /* Changed to absolute for positioning relative to its nearest positioned ancestor or the initial containing block (usually the viewport) */
+    top: 23px; /* Adjusted to 0 to ensure it's at the very top */
+    left: 180px; /* Ensures it's aligned to the left edge */
+    width: 30%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start; /* Keeps items aligned at the top of the container */
+    justify-content: space-between;
+    padding: 32px 83px 206px 82px; /* Adjust padding as needed */
+    box-sizing: border-box;
+    text-align: left;
+    font-size: var(--font-size-xl);
+    color: #fdfdfdcc;
+    font-family: var(--font-inter);
+}

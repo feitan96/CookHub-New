@@ -1,47 +1,35 @@
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 
-import { INavLink } from "@/types";
-import { sidebarLinks } from "@/constants";
-import { Loader } from "@/components/shared";
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
+import { useUserContext } from "@/context/AuthContext";
 import { useSignOutAccount } from "@/lib/react-query/queries";
-import { useUserContext, INITIAL_USER } from "@/context/AuthContext";
+import { sidebarLinks } from "@/constants";
+import { INavLink } from "@/types";
 
 const LeftSidebar = () => {
-  const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { user, setUser, setIsAuthenticated, isLoading } = useUserContext();
+  const navigate = useNavigate();
+  const { user } = useUserContext();
+  const { mutate: signOut, isSuccess } = useSignOutAccount();
 
-  const { mutate: signOut } = useSignOutAccount();
-
-  const handleSignOut = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.preventDefault();
-    signOut();
-    setIsAuthenticated(false);
-    setUser(INITIAL_USER);
-    navigate("/sign-in");
-  };
-
+  useEffect(() => {
+    if (isSuccess) navigate(0);
+  }, [isSuccess]);
+  
   return (
-    <nav className="leftsidebar">
+    <nav className='leftsidebar'>
       <div className="flex flex-col gap-11">
         <Link to="/" className="flex gap-3 items-center">
-          <img
-            src="/assets/images/logo.svg"
-            alt="logo"
-            width={170}
-            height={36}
-          />
+            <img
+              src="/assets/images/cookhub.png"
+              alt="logo"
+              width={170}
+              height={36}
+            />
         </Link>
 
-        {isLoading || !user.email ? (
-          <div className="h-14">
-            <Loader />
-          </div>
-        ) : (
-          <Link to={`/profile/${user.id}`} className="flex gap-3 items-center">
+        <Link to={`/profile/${user.id}`} className="flex gap-3 items-center">
             <img
               src={user.imageUrl || "/assets/icons/profile-placeholder.svg"}
               alt="profile"
@@ -52,45 +40,47 @@ const LeftSidebar = () => {
               <p className="small-regular text-light-3">@{user.username}</p>
             </div>
           </Link>
-        )}
 
-        <ul className="flex flex-col gap-6">
-          {sidebarLinks.map((link: INavLink) => {
-            const isActive = pathname === link.route;
+          <ul className="flex flex-col gap-6">
+            {sidebarLinks.map((link: INavLink) => {
+              const isActive = pathname === link.route;
 
-            return (
-              <li
+              return (
+                <li
                 key={link.label}
                 className={`leftsidebar-link group ${
-                  isActive && "bg-primary-500"
+                  isActive && "bg-[rgb(18,55,42)]"
                 }`}>
+
                 <NavLink
                   to={link.route}
-                  className="flex gap-4 items-center p-4">
+                  className="flex gap-4 items-center p-4 "
+                >
                   <img
                     src={link.imgURL}
                     alt={link.label}
-                    className={`group-hover:invert-white ${
+                    className={`group-hover:invert-white  ${
                       isActive && "invert-white"
                     }`}
                   />
                   {link.label}
                 </NavLink>
-              </li>
-            );
-          })}
-        </ul>
+
+
+                </li>
+              )
+            })}
+          </ul>
+          <Button
+            variant="ghost"
+            className="shad-button_ghost"
+            onClick={() => signOut()}>
+            <img src="/assets/icons/logout.svg" alt="logout" />
+            <p className="small-medium lg:base-medium">Signout</p>
+          </Button>
       </div>
-
-      <Button
-        variant="ghost"
-        className="shad-button_ghost"
-        onClick={(e) => handleSignOut(e)}>
-        <img src="/assets/icons/logout.svg" alt="logout" />
-        <p className="small-medium lg:base-medium">Logout</p>
-      </Button>
     </nav>
-  );
-};
+  )
+}
 
-export default LeftSidebar;
+export default LeftSidebar

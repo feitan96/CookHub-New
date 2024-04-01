@@ -1,51 +1,55 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route } from 'react-router-dom';
+import './globals.css';
+import { AllUsers, CreatePost, EditPost, Explore, Home, PostDetails, Profile, Saved, UpdateProfile } from './_root/pages';
+import HeroPage from './_root/pages/HeroPage';
+import AuthLayout from './_auth/AuthLayout';
+import RootLayout from './_root/RootLayout';
+import SigninForm from './_auth/forms/SigninForm';
+import SignupForm from './_auth/forms/SignupForm';
 
-import {
-  Home,
-  Explore,
-  Saved,
-  CreatePost,
-  Profile,
-  EditPost,
-  PostDetails,
-  UpdateProfile,
-  AllUsers,
-} from "@/_root/pages";
-import AuthLayout from "./_auth/AuthLayout";
-import RootLayout from "./_root/RootLayout";
-import SignupForm from "@/_auth/forms/SignupForm";
-import SigninForm from "@/_auth/forms/SigninForm";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/toaster"
+import Discover from './_root/pages/Discover';
 
-import "./globals.css";
-
-const App = () => {
+function App() {
   return (
-    <main className="flex h-screen">
+    <>
       <Routes>
-        {/* public routes */}
-        <Route element={<AuthLayout />}>
-          <Route path="/sign-in" element={<SigninForm />} />
-          <Route path="/sign-up" element={<SignupForm />} />
-        </Route>
+        {/* Set HeroPage as the default route */}
+        <Route path="/hero-page" element={<HeroPage />} />
+        
+        {/* Other routes wrapped in main with flex h-screen */}
+        <Route path="*" element={
+          <main className="flex h-screen">
+            <Routes>
+              {/* Auth routes */}
+              <Route element={<AuthLayout />}>
+                <Route path="/sign-in" element={<SigninForm />} />
+                <Route path="/sign-up" element={<SignupForm />} />
+              </Route>
 
-        {/* private routes */}
-        <Route element={<RootLayout />}>
-          <Route index element={<Home />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/saved" element={<Saved />} />
-          <Route path="/all-users" element={<AllUsers />} />
-          <Route path="/create-post" element={<CreatePost />} />
-          <Route path="/update-post/:id" element={<EditPost />} />
-          <Route path="/posts/:id" element={<PostDetails />} />
-          <Route path="/profile/:id/*" element={<Profile />} />
-          <Route path="/update-profile/:id" element={<UpdateProfile />} />
-        </Route>
+              {/* Root layout routes */}
+              <Route element={<RootLayout />}>
+              <Route index element={<Home />} />  
+                <Route path="/home" element={<Home />} />
+                <Route path="/discover" element={<Discover />} />
+                <Route path="/explore" element={<Explore />} />
+                <Route path="/saved" element={<Saved />} />
+                <Route path="/all-users" element={<AllUsers />} />
+                <Route path="/create-post" element={<CreatePost />} />
+                <Route path="/update-post/:id" element={<EditPost />} />
+                <Route path="/posts/:id" element={<PostDetails />} />
+                <Route path="/profile/:id/*" element={<Profile />} />
+                <Route path="/update-profile/:id" element={<UpdateProfile />} />    
+
+                {/* Add other routes here */}
+              </Route>
+            </Routes>
+            <Toaster />
+          </main>
+        } />
       </Routes>
-
-      <Toaster />
-    </main>
+    </>
   );
-};
+}
 
 export default App;

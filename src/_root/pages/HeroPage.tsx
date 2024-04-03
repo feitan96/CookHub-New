@@ -43,7 +43,7 @@ function HeroPage() {
             <button className="next">
                 <Link  
                     to="/sign-in"
-                 className="login">login
+                    className="login">login
                 </Link>
             </button>
             <div className="icon">

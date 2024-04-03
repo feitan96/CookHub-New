@@ -15,7 +15,7 @@ const Topbar = () => {
   }, [isSuccess]);
 
   return (
-    <section className="topbar">
+    <section className="topbar" >
       <div className="flex-between py-4 px-5">
         <Link to="/" className="flex gap-3 items-center">
           <img
@@ -26,7 +26,7 @@ const Topbar = () => {
           />
         </Link>
 
-        <div className="flex gap-4">
+        <div className="flex gap-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
           <Button
             variant="ghost"
             className="shad-button_ghost"

@@ -9,11 +9,7 @@ export const sidebarLinks = [
     route: "/discover",
     label: "Discover",
   },
-  {
-    imgURL: "/assets/icons/wallpaper.svg",
-    route: "/explore",
-    label: "Explore",
-  },
+
   {
     imgURL: "/assets/icons/people.svg",
     route: "/all-users",
@@ -42,10 +38,11 @@ export const bottombarLinks = [
     route: "/discover",
     label: "Discover",
   },
+
   {
-    imgURL: "/assets/icons/wallpaper.svg",
-    route: "/explore",
-    label: "Explore",
+    imgURL: "/assets/icons/people.svg",
+    route: "/all-users",
+    label: "People",
   },
   {
     imgURL: "/assets/icons/bookmark.svg",

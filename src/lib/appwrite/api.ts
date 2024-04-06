@@ -133,6 +133,8 @@ export async function createPost(post: INewPost) {
     }
 
     // Convert tags into array
+    const ingredients = post.ingredients?.split(",") || [];
+    const instructions = post.instructions?.split("]") || [];
     const tags = post.tags?.replace(/ /g, "").split(",") || [];
 
     // Create post
@@ -146,6 +148,8 @@ export async function createPost(post: INewPost) {
         imageUrl: fileUrl,
         imageId: uploadedFile.$id,
         location: post.location,
+        ingredients: ingredients,
+        instructions: instructions,
         tags: tags,
       }
     );
@@ -291,6 +295,8 @@ export async function updatePost(post: IUpdatePost) {
     }
 
     // Convert tags into array
+    const ingredients = post.ingredients?.split(",") || [];
+    const instructions = post.instructions?.split("]") || [];
     const tags = post.tags?.replace(/ /g, "").split(",") || [];
 
     //  Update post
@@ -303,6 +309,8 @@ export async function updatePost(post: IUpdatePost) {
         imageUrl: image.imageUrl,
         imageId: image.imageId,
         location: post.location,
+        ingredients: ingredients,
+        instructions: instructions,
         tags: tags,
       }
     );

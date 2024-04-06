@@ -17,13 +17,13 @@ const Topbar = () => {
   return (
     <section className="topbar">
       <div className="flex-between py-4 px-5">
-        <Link to="/" className="flex gap-3 items-center">
-          <img
-            src="/assets/images/logo.svg"
-            alt="logo"
-            width={130}
-            height={325}
-          />
+      <Link to="/" className="flex gap-3 items-center">
+            <img
+              src="/assets/images/cookhub.png"
+              alt="logo"
+              width={170}
+              height={36}
+            />
         </Link>
 
         <div className="flex gap-4">

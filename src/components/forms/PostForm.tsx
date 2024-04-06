@@ -36,7 +36,9 @@ const PostForm = ({ post, action }: PostFormProps) => {
       caption: post ? post?.caption : "",
       file: [],
       location: post ? post.location : "",
-      tags: post ? post.tags.join(",") : "",
+      ingredients: post ? post.ingredients.join(", ") : "",
+      instructions: post ? post.instructions.join(", ") : "",
+      tags: post ? post.tags.join(", ") : "",
     },
   });
 
@@ -134,15 +136,15 @@ const PostForm = ({ post, action }: PostFormProps) => {
 
         <FormField
           control={form.control}
-          name="tags"
+          name="ingredients"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="shad-form_label">
-                Add Tags (separated by comma " , ")
+                Add Ingredients (separated by comma " , ")
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Art, Expression, Learn"
+                  placeholder="Chicken - 1 kg, Honey - 2 tablespoons, Oil - 1 mililiter"
                   type="text"
                   className="shad-input"
                   {...field}
@@ -152,6 +154,47 @@ const PostForm = ({ post, action }: PostFormProps) => {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="instructions"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="shad-form_label">
+                Add Instructions (separated by right bracket " ] ")
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Put your pan on medium heat., Add chicken, honey, and oil., Cook for 10 minutes."
+                  type="text"
+                  className="shad-input"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage className="shad-form_message" />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="tags"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="shad-form_label">
+                Add Tags (separated by comma " , ")
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Budget-friendly, Vegan, High-calorie"
+                  type="text"
+                  className="shad-input"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage className="shad-form_message" />
+            </FormItem>
+          )}
+        />
+        
 
         <div className="flex gap-4 items-center justify-end">
           <Button

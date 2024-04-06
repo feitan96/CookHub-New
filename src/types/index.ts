@@ -19,6 +19,8 @@ export type INewPost = {
   file: File[];
   location?: string;
   tags?: string;
+  ingredients?: string;
+  instructions?: string;
 };
 
 export type IUpdatePost = {
@@ -28,6 +30,8 @@ export type IUpdatePost = {
   imageUrl: URL;
   file: File[];
   location?: string;
+  ingredients?: string;
+  instructions?: string;
   tags?: string;
 };
 

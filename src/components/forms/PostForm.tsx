@@ -37,7 +37,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
       file: [],
       location: post ? post.location : "",
       ingredients: post ? post.ingredients.join(", ") : "",
-      instructions: post ? post.instructions.join(", ") : "",
+      instructions: post ? post.instructions.join("] ") : "",
       tags: post ? post.tags.join(", ") : "",
     },
   });

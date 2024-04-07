@@ -57,11 +57,13 @@ const PostDetails = () => {
         <Loader />
       ) : (
         <div className="post_details-card">
-          <img
-            src={post?.imageUrl}
-            alt="creator"
-            className="post_details-img"
+          <img 
+            src={post?.imageUrl} 
+            alt="creator" 
+            className="post_details-img cursor-pointer" 
+            onClick={() => window.open(post?.imageUrl, '_blank')}
           />
+
 
           <div className="post_details-info">
             <div className="flex-between w-full">
@@ -136,17 +138,16 @@ const PostDetails = () => {
             </div>
              
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
-  <p>Ingredients</p>
-  <ul className="flex flex-col gap-1 mt-2">
-    {post?.ingredients.map((ingredient: string, index: number) => (
-      <li key={index} className="">
-        {/* Add bullet point before each ingredient */}
-        &#8226; {ingredient}
-      </li>
-    ))}
-  </ul>
-</div>
-
+              <p>Ingredients</p>
+              <ul className="flex flex-col gap-1 mt-2">
+                {post?.ingredients.map((ingredient: string, index: number) => (
+                  <li key={index} className="">
+                    {/* Add bullet point before each ingredient */}
+                    &#8226; {ingredient}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
               <p>Instructions</p>

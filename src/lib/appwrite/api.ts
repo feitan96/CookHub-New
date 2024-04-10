@@ -415,6 +415,28 @@ export async function deleteSavedPost(savedRecordId: string) {
   }
 }
 
+// ============================== RATE POST
+export async function ratePost(postId: string, userId: string, rating: number) {
+  try {
+    const newRating = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.ratingsCollectionId,
+      ID.unique(),
+      {
+        posts: postId,
+        users: userId,
+        rating: rating,
+      }
+    );
+
+    if (!newRating) throw Error;
+
+    return newRating;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 // ============================== GET USER'S POST
 export async function getUserPosts(userId?: string) {
   if (!userId) return;

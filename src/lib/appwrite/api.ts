@@ -437,6 +437,24 @@ export async function ratePost(postId: string, userId: string, rating: number) {
   }
 }
 
+export async function removeRating(postId: string, userId: string) {
+  try {
+    // Delete the rating document from the database
+    await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.ratingsCollectionId,
+      postId + userId // Assuming postId and userId combination is unique
+    );
+
+    // Return true to indicate successful removal
+    return true;
+  } catch (error) {
+    console.log(error);
+    // Return false or handle error as needed
+    return false;
+  }
+}
+
 // ============================== GET USER'S POST
 export async function getUserPosts(userId?: string) {
   if (!userId) return;

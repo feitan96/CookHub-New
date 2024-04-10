@@ -10,6 +10,7 @@ import {
   useRatePost,
   useGetCurrentUser
 } from "@/lib/react-query/queries";
+import { removeRating } from "@/lib/appwrite/api";
 
 type PostStatsProps = {
   post: Models.Document;
@@ -87,77 +88,91 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     setIsSaved(true);
   };
 
+  const handleRemoveRating = () => {
+    // Remove the rating from the database
+    removeRating(post.$id, userId).then((success) => {
+      if (success) {
+        setIsRated(false); // Reset isRated state
+      } else {
+        alert("Failed to remove rating. Please try again.");
+      }
+    });
+  };
+  
   const handleRatePost = () => {
-    const ratingInput = parseFloat(prompt("Please rate this post from 0.0 to 5.0") || '0');
-    if (ratingInput >= 0 && ratingInput <= 5) {
-      // Update rated state and store in local storage
-      setIsRated(true);
-      const ratedPosts = JSON.parse(localStorage.getItem('ratedPosts') || '{}');
-      const userRatings = Array.isArray(ratedPosts[post.$id]) ? ratedPosts[post.$id] : [];
-      // Add current user to the list of rated users for this post
-      ratedPosts[post.$id] = [...userRatings, userId];
-      localStorage.setItem('ratedPosts', JSON.stringify(ratedPosts));
-      ratePostMutation({ postId: post.$id, userId, rating: ratingInput });
+    // If the user has already rated the post, remove the rating instead
+    if (isRated) {
+      handleRemoveRating();
     } else {
-      alert("Please enter a valid rating between 0.0 and 5.0");
+      // If the user hasn't rated the post, prompt for rating as before
+      const ratingInput = parseFloat(prompt("Please rate this post from 0.0 to 5.0") || '0');
+      if (ratingInput >= 0 && ratingInput <= 5) {
+        setIsRated(true);
+        ratePostMutation({ postId: post.$id, userId, rating: ratingInput });
+      } else {
+        alert("Please enter a valid rating between 0.0 and 5.0");
+      }
     }
   };
+  
+  
   const containerStyles = location.pathname.startsWith("/profile")
     ? "w-full"
     : "";
 
-  return (
-    <div
-      className={`flex justify-between items-center z-20 ${containerStyles}`}>
-      <div className="flex gap-2 mr-5">
-        <img
-          src={`${
-            checkIsLiked(likes, userId)
-              ? "/assets/icons/liked.svg"
-              : "/assets/icons/like.svg"
-          }`}
-          alt="like"
-          width={20}
-          height={20}
-          onClick={(e) => handleLikePost(e)}
-          className="cursor-pointer"
-        />
-        <p className="small-medium lg:base-medium">{likes.length}</p>
-        {/* Show different icons based on whether the post is rated or not */}
-        {isRated ? (
+    return (
+      <div className={`flex justify-between items-center z-20 ${containerStyles}`}>
+        <div className="flex gap-2 mr-5">
           <img
-            src="/assets/icons/rated.svg"
-            alt="rated"
+            src={`${
+              checkIsLiked(likes, userId)
+                ? "/assets/icons/liked.svg"
+                : "/assets/icons/like.svg"
+            }`}
+            alt="like"
+            width={20}
+            height={20}
+            onClick={(e) => handleLikePost(e)}
+            className="cursor-pointer"
+          />
+          <p className="small-medium lg:base-medium">{likes.length}</p>
+          {/* Show different icons based on whether the post is rated or not */}
+          {isRated ? (
+            <img
+              src="/assets/icons/rated.svg"
+              alt="rated"
+              width={20}
+              height={20}
+              className="cursor-pointer"
+              onClick={handleRemoveRating} // Call handleRemoveRating function when rated icon is clicked
+            />
+          ) : (
+            <img
+              src="/assets/icons/rate.svg"
+              alt="rate"
+              width={20}
+              height={20}
+              className="cursor-pointer"
+              onClick={handleRatePost}
+            />
+          )}
+          {/* Display the average rating */}
+          <p>{averageRating.toFixed(1)}</p>
+        </div>
+    
+        <div className="flex gap-2">
+          <img
+            src={isSaved ? "/assets/icons/saved.svg" : "/assets/icons/save.svg"}
+            alt="share"
             width={20}
             height={20}
             className="cursor-pointer"
+            onClick={(e) => handleSavePost(e)}
           />
-        ) : (
-          <img
-            src="/assets/icons/rate.svg"
-            alt="rate"
-            width={20}
-            height={20}
-            className="cursor-pointer"
-            onClick={handleRatePost}
-          />
-        )}
-        {/* Display the average rating */}
-        <p>{averageRating.toFixed(1)}</p>
+        </div>
       </div>
-
-      <div className="flex gap-2">
-        <img
-          src={isSaved ? "/assets/icons/saved.svg" : "/assets/icons/save.svg"}
-          alt="share"
-          width={20}
-          height={20}
-          className="cursor-pointer"
-          onClick={(e) => handleSavePost(e)}
-        />
-      </div>
-    </div>
-  );
+    );
+    
 };
 
 export default PostStats;

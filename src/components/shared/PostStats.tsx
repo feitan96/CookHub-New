@@ -126,7 +126,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
         {/* Show different icons based on whether the post is rated or not */}
         {isRated ? (
           <img
-            src="/assets/icons/rated.svg"
+            src="/assets/icons/rated2.svg"
             alt="rated"
             width={20}
             height={20}
@@ -134,7 +134,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
           />
         ) : (
           <img
-            src="/assets/icons/rate.svg"
+            src="/assets/icons/rate2.svg"
             alt="rate"
             width={20}
             height={20}

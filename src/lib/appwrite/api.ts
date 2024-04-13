@@ -19,6 +19,17 @@ export async function createUserAccount(user: INewUser) {
 
     if (!newAccount) throw Error;
 
+    // Add email verification
+    const promise = account.createVerification("http://localhost:5173");
+    promise.then(
+      function (response) {
+        console.log(response); // Success
+      },
+      function (error) {
+        console.log((error as Error).message); // Failure
+      }
+    );
+
     const avatarUrl = avatars.getInitials(user.name);
 
     const newUser = await saveUserToDB({
@@ -31,7 +42,14 @@ export async function createUserAccount(user: INewUser) {
 
     return newUser;
   } catch (error) {
-    console.log(error);
+    if (
+      (error as Error).message ===
+      "A user with the same id, email, or phone already exists in this project."
+    ) {
+      console.log("A user with this email already exists.");
+      return null;
+    }
+    console.log((error as Error).message);
     return error;
   }
 }
@@ -144,6 +162,7 @@ export async function createPost(post: INewPost) {
       ID.unique(),
       {
         creator: post.userId,
+        name: post.name,
         caption: post.caption,
         imageUrl: fileUrl,
         imageId: uploadedFile.$id,
@@ -305,6 +324,7 @@ export async function updatePost(post: IUpdatePost) {
       appwriteConfig.postCollectionId,
       post.postId,
       {
+        name: post.name,
         caption: post.caption,
         imageUrl: image.imageUrl,
         imageId: image.imageId,

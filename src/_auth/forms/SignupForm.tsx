@@ -38,8 +38,11 @@ const SignupForm = () => {
       const newUser = await createUserAccount(user);
 
       if (!newUser) {
-        toast({ title: "Sign up failed. Please try again.", });
-        
+        if (newUser === null) {
+          toast({ title: "Email is already used. Please use a different email.", });
+        } else {
+          toast({ title: "Sign up failed. Please try again.", });
+        }
         return;
       }
 
@@ -123,10 +126,16 @@ const SignupForm = () => {
                 <FormControl>
                   <Input type="text" className="shad-input" {...field} />
                 </FormControl>
-                <FormMessage />
+                {/* Display error message if email format is incorrect */}
+                {form.formState.errors.email && (
+                  <FormMessage className="text-red-500">
+                    {form.formState.errors.email.message}
+                  </FormMessage>
+                )}
               </FormItem>
             )}
           />
+
 
           <FormField
             control={form.control}

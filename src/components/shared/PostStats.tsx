@@ -7,7 +7,8 @@ import {
   useLikePost,
   useSavePost,
   useDeleteSavedPost,
-  useGetCurrentUser,
+  useRatePost,
+  useGetCurrentUser
 } from "@/lib/react-query/queries";
 
 type PostStatsProps = {
@@ -21,10 +22,13 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
 
   const [likes, setLikes] = useState<string[]>(likesList);
   const [isSaved, setIsSaved] = useState(false);
+  const [isRated, setIsRated] = useState(false);
+  const [averageRating, setAverageRating] = useState(0);
 
   const { mutate: likePost } = useLikePost();
   const { mutate: savePost } = useSavePost();
   const { mutate: deleteSavePost } = useDeleteSavedPost();
+  const { mutate: ratePostMutation } = useRatePost();
 
   const { data: currentUser } = useGetCurrentUser();
 
@@ -34,8 +38,24 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
 
   useEffect(() => {
     setIsSaved(!!savedPostRecord);
-  }, [currentUser]);
+    // Calculate average rating when post data changes
+    calculateAverageRating();
+  }, [currentUser, post]);
 
+  useEffect(() => {
+    // Retrieve rated posts from local storage
+    const ratedPosts = JSON.parse(localStorage.getItem('ratedPosts') || '{}');
+    // Check if the current user has rated the post
+    setIsRated(Array.isArray(ratedPosts[post.$id]) && ratedPosts[post.$id].includes(userId));
+  }, [post, userId]);
+
+  const calculateAverageRating = () => {
+    // Calculate average rating logic here
+    const totalRatings = post.ratings.length;
+    const sumRatings = post.ratings.reduce((acc: number, rating: { rating: number }) => acc + rating.rating, 0);
+    const average = totalRatings > 0 ? sumRatings / totalRatings : 0;
+    setAverageRating(average);
+  };
   const handleLikePost = (
     e: React.MouseEvent<HTMLImageElement, MouseEvent>
   ) => {
@@ -67,6 +87,21 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     setIsSaved(true);
   };
 
+  const handleRatePost = () => {
+    const ratingInput = parseFloat(prompt("Please rate this post from 0.0 to 5.0") || '0');
+    if (ratingInput >= 0 && ratingInput <= 5) {
+      // Update rated state and store in local storage
+      setIsRated(true);
+      const ratedPosts = JSON.parse(localStorage.getItem('ratedPosts') || '{}');
+      const userRatings = Array.isArray(ratedPosts[post.$id]) ? ratedPosts[post.$id] : [];
+      // Add current user to the list of rated users for this post
+      ratedPosts[post.$id] = [...userRatings, userId];
+      localStorage.setItem('ratedPosts', JSON.stringify(ratedPosts));
+      ratePostMutation({ postId: post.$id, userId, rating: ratingInput });
+    } else {
+      alert("Please enter a valid rating between 0.0 and 5.0");
+    }
+  };
   const containerStyles = location.pathname.startsWith("/profile")
     ? "w-full"
     : "";
@@ -88,6 +123,27 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
           className="cursor-pointer"
         />
         <p className="small-medium lg:base-medium">{likes.length}</p>
+        {/* Show different icons based on whether the post is rated or not */}
+        {isRated ? (
+          <img
+            src="/assets/icons/rated2.svg"
+            alt="rated"
+            width={20}
+            height={20}
+            className="cursor-pointer"
+          />
+        ) : (
+          <img
+            src="/assets/icons/rate2.svg"
+            alt="rate"
+            width={20}
+            height={20}
+            className="cursor-pointer"
+            onClick={handleRatePost}
+          />
+        )}
+        {/* Display the average rating */}
+        <p>{averageRating.toFixed(1)}</p>
       </div>
 
       <div className="flex gap-2">

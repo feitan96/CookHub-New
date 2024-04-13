@@ -33,6 +33,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
   const form = useForm<z.infer<typeof PostValidation>>({
     resolver: zodResolver(PostValidation),
     defaultValues: {
+      name: post ? post?.name : "",
       caption: post ? post?.caption : "",
       file: [],
       location: post ? post.location : "",
@@ -88,10 +89,29 @@ const PostForm = ({ post, action }: PostFormProps) => {
         className="flex flex-col gap-9 w-full  max-w-5xl">
         <FormField
           control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="shad-form_label">
+                Dish Name
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  className="shad-input"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage className="shad-form_message" />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="caption"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Caption</FormLabel>
+              <FormLabel className="shad-form_label">Disk Description</FormLabel>
               <FormControl>
                 <Textarea
                   className="shad-textarea custom-scrollbar"

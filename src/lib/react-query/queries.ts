@@ -25,6 +25,7 @@ import {
   searchPosts,
   savePost,
   deleteSavedPost,
+  ratePost,
 } from "@/lib/appwrite/api";
 import { INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
 
@@ -190,6 +191,25 @@ export const useDeleteSavedPost = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (savedRecordId: string) => deleteSavedPost(savedRecordId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POSTS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+      });
+    },
+  });
+};
+
+export const useRatePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ postId, userId, rating }: { postId: string; userId: string; rating: number }) =>
+      ratePost(postId, userId, rating),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],

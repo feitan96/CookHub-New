@@ -39,12 +39,13 @@ export async function createUserAccount(user: INewUser) {
       username: user.username,
       imageUrl: avatarUrl,
     });
+    console.log("The user has successfully been created.");
 
     return newUser;
   } catch (error) {
     if (
       (error as Error).message ===
-      "A user with the same id, email, or phone already exists in this project."
+      "A user with the username or email already exists in this project."
     ) {
       console.log("A user with this email already exists.");
       return null;

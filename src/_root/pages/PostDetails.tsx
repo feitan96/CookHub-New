@@ -137,9 +137,11 @@ const PostDetails = () => {
                 ))}
               </ul>
             </div>
+
+            <hr className="border w-full border-dark-4/80" />
              
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
-              <p>Ingredients</p>
+              <p className="mb-2 text-lg font-bold">Ingredients</p>
               <ul className="flex flex-col gap-1 mt-2">
                 {post?.ingredients.map((ingredient: string, index: number) => (
                   <li key={index} className="">
@@ -150,8 +152,10 @@ const PostDetails = () => {
               </ul>
             </div>
 
+            <hr className="border w-full border-dark-4/80" />
+
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
-              <p>Instructions</p>
+              <p className="mb-2 text-lg font-bold">Instructions</p>
               <ul className="flex flex-col gap-1 mt-2">
                 {post?.instructions.map((instruction: string, index: number) => (
                   <li

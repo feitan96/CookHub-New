@@ -37,8 +37,8 @@ const PostForm = ({ post, action }: PostFormProps) => {
       caption: post ? post?.caption : "",
       file: [],
       location: post ? post.location : "",
-      ingredients: post ? post.ingredients.join(", ") : "",
-      instructions: post ? post.instructions.join("] ") : "",
+      ingredients: post ? post.ingredients.join("/ ") : "",
+      instructions: post ? post.instructions.join("/ ") : "",
       tags: post ? post.tags.join(", ") : "",
     },
   });
@@ -160,13 +160,12 @@ const PostForm = ({ post, action }: PostFormProps) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="shad-form_label">
-                Add Ingredients (separated by comma " , ")
+                Add Ingredients (separated by forward slash " / ")
               </FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Chicken - 1 kg, Honey - 2 tablespoons, Oil - 1 mililiter"
-                  type="text"
-                  className="shad-input"
+                <Textarea
+                  placeholder="1kg Chicken/ 2tbsps Honey/ 50mL Oil"
+                  className="shad-textarea custom-scrollbar"
                   {...field}
                 />
               </FormControl>
@@ -180,13 +179,12 @@ const PostForm = ({ post, action }: PostFormProps) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="shad-form_label">
-                Add Instructions (separated by right bracket " ] ")
+                Add Instructions (separated by forward slash " / ")
               </FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Put your pan on medium heat., Add chicken, honey, and oil., Cook for 10 minutes."
-                  type="text"
-                  className="shad-input"
+                <Textarea
+                  placeholder="Put your pan on medium heat./ Add chicken, honey, and oil./ Cook for 10 minutes."
+                  className="shad-textarea custom-scrollbar"
                   {...field}
                 />
               </FormControl>
@@ -194,6 +192,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="tags"

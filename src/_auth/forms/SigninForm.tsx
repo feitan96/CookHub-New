@@ -110,6 +110,13 @@ const SigninForm = () => {
               Sign up
             </Link>
           </p>
+          <p className="text-center mt-2">
+          <Link
+              to="/forgot-pass"
+              className="text-primary-500 text-small-semibold ml-1">
+              Forgot Password?
+            </Link>
+            </p>
         </form>
       </div>
     </Form>

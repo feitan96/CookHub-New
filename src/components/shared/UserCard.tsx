@@ -11,7 +11,7 @@ const UserCard = ({ user }: UserCardProps) => {
   const { user: loggedInUser } = useUserContext(); // Get the logged-in user
 
   return (
-    <Link to={`/profile/${user.$id}`} className="user-card">
+    <Link to={`/profile/${user.$id}`} className="user-card" style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)'}}>
       <img
         src={user.imageUrl || "/assets/icons/profile-placeholder.svg"}
         alt="creator"

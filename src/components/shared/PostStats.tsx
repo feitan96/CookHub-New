@@ -88,7 +88,9 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   };
 
   const handleRatePost = () => {
-    const ratingInput = parseFloat(prompt("Please rate this post from 0.0 to 5.0") || '0');
+    const ratingPrompt = prompt("Please rate this post from 0.0 to 5.0");
+    if (ratingPrompt === null) return; // If prompt is cancelled, exit the function
+    const ratingInput = parseFloat(ratingPrompt);
     if (ratingInput >= 0 && ratingInput <= 5) {
       // Update rated state and store in local storage
       setIsRated(true);
@@ -102,6 +104,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
       alert("Please enter a valid rating between 0.0 and 5.0");
     }
   };
+  
   const containerStyles = location.pathname.startsWith("/profile")
     ? "w-full"
     : "";

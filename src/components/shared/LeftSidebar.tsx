@@ -18,8 +18,16 @@ const LeftSidebar = () => {
   }, [isSuccess]);
   
   return (
-    <nav className='leftsidebar'>
+     // Adjusting the style here
+    <nav className='leftsidebar' style={{
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      borderRadius: '20px 20px 20px 20px', // Rounded edges on the right side
+      marginLeft: '20px', // Gap on the leftmost side
+      marginTop: '20px', // Optional: Adds space at the top
+      marginBottom: '20px', // Optional: Adds space at the bottom
+    }}>
       <div className="flex flex-col gap-11">
+        
         <Link to="/" className="flex gap-3 items-center">
             <img
               src="/assets/images/cookhub.png"

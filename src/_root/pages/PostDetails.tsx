@@ -11,6 +11,7 @@ import {
 } from "@/lib/react-query/queries";
 import { multiFormatDateString } from "@/lib/utils";
 import { useUserContext } from "@/context/AuthContext";
+import { SetStateAction, useState } from "react";
 
 const PostDetails = () => {
   const navigate = useNavigate();
@@ -33,6 +34,19 @@ const PostDetails = () => {
       deletePost({ postId: id, imageId: post?.imageId });
       navigate(-1);
     }
+  };
+
+  const [comment, setComment] = useState("");
+
+  const handleCommentChange = (e: { target: { value: SetStateAction<string>; }; }) => {
+    setComment(e.target.value);
+  };
+
+  const handlePostComment = () => {
+    // Implement logic to post comment
+    console.log("Posting comment:", comment);
+    // Clear the comment input after posting
+    setComment("");
   };
   
 
@@ -169,6 +183,26 @@ const PostDetails = () => {
 
             <div className="w-full">
               <PostStats post={post} userId={user.id} />
+            </div>
+
+            <hr className="border w-full border-dark-4/80" />
+
+                  {/* Comment Section */}
+            <div className="comment-section mt-6 w-full">
+              <h3 className="text-lg font-bold mb-2">Comments</h3>
+              <textarea
+                value={comment}
+                onChange={handleCommentChange}
+                placeholder="Add your comment here..."
+                className="shad-textarea w-full p-2 border rounded-md bg-gray-100 custom-scrollbar"
+              />
+              <button
+                onClick={handlePostComment}
+                disabled={!comment}
+                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                Post Comment
+              </button>
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { ID, Query } from "appwrite";
 
 import { appwriteConfig, account, databases, storage, avatars } from "./config";
-import { IUpdatePost, INewPost, INewUser, IUpdateUser } from "@/types";
+import { IUpdatePost, INewPost, INewUser, IUpdateUser, IComment } from "@/types";
 
 // ============================================================
 // AUTH
@@ -180,6 +180,28 @@ export async function createPost(post: INewPost) {
     }
 
     return newPost;
+  } catch (error) {
+    console.log(error);
+  }
+}
+// ============================== COMMENT POST
+export async function commentPost(comment: IComment) {
+  try {
+    const newComment = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.commentsCollectionId,
+      comment.postId,
+      {
+        users: comment.userId,
+        comment: comment.comment,
+      }
+    );
+
+    if (!newComment) {
+      throw Error;
+    }
+
+    return newComment;
   } catch (error) {
     console.log(error);
   }

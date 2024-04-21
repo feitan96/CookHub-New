@@ -37,6 +37,12 @@ export type IUpdatePost = {
   tags?: string;
 };
 
+export type IComment = {
+  postId: string;
+  comment: string;
+  userId: string;
+};
+
 export type IUser = {
   id: string;
   name: string;

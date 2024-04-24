@@ -10,11 +10,6 @@ const AllUsers = () => {
   const { data: creators, isLoading, isError: isErrorCreators } = useGetUsers();
   const { data: searchedUsers, isFetching: isSearchFetching } = useSearchUsers(searchValue);
 
-  const handleSearchChange = (e: { target: { value: any; }; }) => {
-    const { value } = e.target;
-    setSearchValue(value);
-  };
-
   if (isErrorCreators) {
     toast({ title: "Something went wrong." });
     return null;

@@ -12,8 +12,6 @@ import {
 import { multiFormatDateString } from "@/lib/utils";
 import { useUserContext } from "@/context/AuthContext";
 import CommentForm from "@/components/forms/CommentForm";
-import CommentCard from "@/components/shared/CommentCard";
-import { Models } from "appwrite";
 
 const PostDetails = () => {
   const navigate = useNavigate();

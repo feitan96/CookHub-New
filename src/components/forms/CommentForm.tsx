@@ -60,6 +60,7 @@ const CommentForm = ({ comment, action }: CommentFormProps) => {
               <FormControl>
                 <Textarea
                   className="shad-textarea custom-scrollbar"
+                  placeholder="di pani mogana pero maka store na syas database nig post comment so ayaw i spam"
                   {...field}
                 />
               </FormControl>

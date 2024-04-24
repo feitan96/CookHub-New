@@ -255,14 +255,12 @@ export async function deleteFile(fileId: string) {
 }
 
 // ============================== GET POSTS
-export async function searchPosts(searchTerm: string) {
+export async function searchByCaption(searchTerm: string) {
   try {
     const posts = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.postCollectionId,
-      [
-        Query.search("caption", searchTerm)
-      ]
+      [Query.search("name", searchTerm)]
     );
 
     if (!posts) throw Error;
@@ -270,9 +268,56 @@ export async function searchPosts(searchTerm: string) {
     return posts;
   } catch (error) {
     console.log(error);
+    return null; 
   }
 }
 
+export async function searchByTags(searchTerm: string) {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      [Query.search("tags", searchTerm)]
+    );
+
+    if (!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+    return null; 
+  }
+}
+
+export async function searchPosts(searchTerm: string) {
+  try {
+    const resultsByCaption = await searchByCaption(searchTerm);
+    const resultsByTags = await searchByTags(searchTerm);
+
+    // Check if either result is null
+    if (!resultsByCaption || !resultsByTags) {
+      return null; // Return null if either result is null
+    }
+
+    // Combine results from both searches
+    const combinedResults = {
+      ...resultsByCaption,
+      documents: [
+        ...resultsByCaption.documents,
+        ...resultsByTags.documents.filter(post => (
+          !resultsByCaption.documents.some(p => p.$id === post.$id)
+        ))
+      ]
+    };
+
+    return combinedResults;
+  } catch (error) {
+    console.log(error);
+    return null; 
+  }
+}
+
+// ============================== SEARCH USERS USING THEIR NAMES AND USERNAMES
 export async function searchByName(searchTerm: string) {
   try {
     const posts = await databases.listDocuments(
@@ -286,7 +331,7 @@ export async function searchByName(searchTerm: string) {
     return posts;
   } catch (error) {
     console.log(error);
-    return null; // Return null if there's an error
+    return null; 
   }
 }
 
@@ -303,7 +348,7 @@ export async function searchByUsername(searchTerm: string) {
     return posts;
   } catch (error) {
     console.log(error);
-    return null; // Return null if there's an error
+    return null; 
   }
 }
 
@@ -331,7 +376,7 @@ export async function searchUsers(searchTerm: string) {
     return combinedResults;
   } catch (error) {
     console.log(error);
-    return null; // Return null if there's an error
+    return null; 
   }
 }
 

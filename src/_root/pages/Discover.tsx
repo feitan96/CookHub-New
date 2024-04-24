@@ -61,7 +61,7 @@ const Discover = () => {
           />
           <Input
             type="text"
-            placeholder="Search"
+            placeholder="Search for recipes using dish name and/or tags"
             className="explore-search"
             value={searchValue}
             onChange={(e) => {

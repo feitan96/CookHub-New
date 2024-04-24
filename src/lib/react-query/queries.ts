@@ -26,8 +26,10 @@ import {
   savePost,
   deleteSavedPost,
   ratePost,
+  commentPost,
+  searchUsers,
 } from "@/lib/appwrite/api";
-import { INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
+import { IComment, INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
 
 // ============================================================
 // AUTH QUERIES
@@ -81,6 +83,14 @@ export const useSearchPosts = (searchTerm: string) => {
   });
 };
 
+export const useSearchUsers = (searchTerm: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.SEARCH_USERS, searchTerm],
+    queryFn: () => searchUsers(searchTerm),
+    enabled: !!searchTerm,
+    retry: false, // Assuming you don't want to retry on failure
+  });
+};
 export const useGetRecentPosts = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
@@ -95,6 +105,18 @@ export const useCreatePost = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+      });
+    },
+  });
+};
+
+export const useCommentPost = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (comment: IComment) => commentPost(comment),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id],
       });
     },
   });

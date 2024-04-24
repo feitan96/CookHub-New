@@ -35,3 +35,10 @@ export const PostValidation = z.object({
   instructions: z.string(),
   tags: z.string(),
 });
+
+// ============================================================
+// COMMENT
+// ============================================================
+export const CommentValidation = z.object({
+  comment: z.string().min(4, { message: "Minimum 4 characters." }).max(2200, { message: "Maximum 2,200 caracters" }),
+});

@@ -1,7 +1,7 @@
 import { ID, Query } from "appwrite";
 
 import { appwriteConfig, account, databases, storage, avatars } from "./config";
-import { IUpdatePost, INewPost, INewUser, IUpdateUser } from "@/types";
+import { IUpdatePost, INewPost, INewUser, IUpdateUser, IComment } from "@/types";
 
 // ============================================================
 // AUTH
@@ -184,6 +184,29 @@ export async function createPost(post: INewPost) {
     console.log(error);
   }
 }
+// ============================== COMMENT POST
+export async function commentPost(comment: IComment) {
+  try {
+    const newComment = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.commentsCollectionId,
+      ID.unique(),
+      {
+        posts: comment.postId,
+        users: comment.userId,
+        comment: comment.comment,
+      }
+    );
+
+    if (!newComment) {
+      throw Error;
+    }
+
+    return newComment;
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 // ============================== UPLOAD FILE
 export async function uploadFile(file: File) {
@@ -232,12 +255,12 @@ export async function deleteFile(fileId: string) {
 }
 
 // ============================== GET POSTS
-export async function searchPosts(searchTerm: string) {
+export async function searchByCaption(searchTerm: string) {
   try {
     const posts = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.postCollectionId,
-      [Query.search("caption", searchTerm)]
+      [Query.search("name", searchTerm)]
     );
 
     if (!posts) throw Error;
@@ -245,6 +268,115 @@ export async function searchPosts(searchTerm: string) {
     return posts;
   } catch (error) {
     console.log(error);
+    return null; 
+  }
+}
+
+export async function searchByTags(searchTerm: string) {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      [Query.search("tags", searchTerm)]
+    );
+
+    if (!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+    return null; 
+  }
+}
+
+export async function searchPosts(searchTerm: string) {
+  try {
+    const resultsByCaption = await searchByCaption(searchTerm);
+    const resultsByTags = await searchByTags(searchTerm);
+
+    // Check if either result is null
+    if (!resultsByCaption || !resultsByTags) {
+      return null; // Return null if either result is null
+    }
+
+    // Combine results from both searches
+    const combinedResults = {
+      ...resultsByCaption,
+      documents: [
+        ...resultsByCaption.documents,
+        ...resultsByTags.documents.filter(post => (
+          !resultsByCaption.documents.some(p => p.$id === post.$id)
+        ))
+      ]
+    };
+
+    return combinedResults;
+  } catch (error) {
+    console.log(error);
+    return null; 
+  }
+}
+
+// ============================== SEARCH USERS USING THEIR NAMES AND USERNAMES
+export async function searchByName(searchTerm: string) {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [Query.search("name", searchTerm)]
+    );
+
+    if (!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+    return null; 
+  }
+}
+
+export async function searchByUsername(searchTerm: string) {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [Query.search("username", searchTerm)]
+    );
+
+    if (!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+    return null; 
+  }
+}
+
+export async function searchUsers(searchTerm: string) {
+  try {
+    const resultsByName = await searchByName(searchTerm);
+    const resultsByUsername = await searchByUsername(searchTerm);
+
+    // Check if either result is null
+    if (!resultsByName || !resultsByUsername) {
+      return null; // Return null if either result is null
+    }
+
+    // Combine results from both searches
+    const combinedResults = {
+      ...resultsByName,
+      documents: [
+        ...resultsByName.documents,
+        ...resultsByUsername.documents.filter(user => (
+          !resultsByName.documents.some(u => u.$id === user.$id)
+        ))
+      ]
+    };
+
+    return combinedResults;
+  } catch (error) {
+    console.log(error);
+    return null; 
   }
 }
 

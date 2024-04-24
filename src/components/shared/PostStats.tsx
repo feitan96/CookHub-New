@@ -88,7 +88,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   };
 
   const handleRatePost = () => {
-    const ratingPrompt = prompt("Please rate this post from 0.0 to 5.0");
+    const ratingPrompt = prompt("Please rate this post from 0.0 to 5.0. Once done successfully, this action will be irrevirsible. You can only rate once per post. Thank you!");
     if (ratingPrompt === null) return; // If prompt is cancelled, exit the function
     const ratingInput = parseFloat(ratingPrompt);
     if (ratingInput >= 0 && ratingInput <= 5) {

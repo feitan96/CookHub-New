@@ -190,8 +190,9 @@ export async function commentPost(comment: IComment) {
     const newComment = await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.commentsCollectionId,
-      comment.postId,
+      ID.unique(),
       {
+        posts: comment.postId,
         users: comment.userId,
         comment: comment.comment,
       }
@@ -259,7 +260,28 @@ export async function searchPosts(searchTerm: string) {
     const posts = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.postCollectionId,
-      [Query.search("caption", searchTerm)]
+      [
+        Query.search("caption", searchTerm)
+      ]
+    );
+
+    if (!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function searchUsers(searchTerm: string) {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [
+        Query.search("name", searchTerm),
+        Query.search("username", searchTerm)
+      ]
     );
 
     if (!posts) throw Error;

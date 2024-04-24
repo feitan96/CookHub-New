@@ -27,6 +27,7 @@ import {
   deleteSavedPost,
   ratePost,
   commentPost,
+  searchUsers,
 } from "@/lib/appwrite/api";
 import { IComment, INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
 
@@ -82,6 +83,14 @@ export const useSearchPosts = (searchTerm: string) => {
   });
 };
 
+export const useSearchUsers = (searchTerm: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.SEARCH_USERS, searchTerm],
+    queryFn: () => searchUsers(searchTerm),
+    enabled: !!searchTerm,
+    retry: false, // Assuming you don't want to retry on failure
+  });
+};
 export const useGetRecentPosts = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_RECENT_POSTS],

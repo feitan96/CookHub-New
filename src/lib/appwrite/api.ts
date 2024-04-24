@@ -273,15 +273,12 @@ export async function searchPosts(searchTerm: string) {
   }
 }
 
-export async function searchUsers(searchTerm: string) {
+export async function searchByName(searchTerm: string) {
   try {
     const posts = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.userCollectionId,
-      [
-        Query.search("name", searchTerm),
-        Query.search("username", searchTerm)
-      ]
+      [Query.search("name", searchTerm)]
     );
 
     if (!posts) throw Error;
@@ -289,6 +286,52 @@ export async function searchUsers(searchTerm: string) {
     return posts;
   } catch (error) {
     console.log(error);
+    return null; // Return null if there's an error
+  }
+}
+
+export async function searchByUsername(searchTerm: string) {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [Query.search("username", searchTerm)]
+    );
+
+    if (!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+    return null; // Return null if there's an error
+  }
+}
+
+export async function searchUsers(searchTerm: string) {
+  try {
+    const resultsByName = await searchByName(searchTerm);
+    const resultsByUsername = await searchByUsername(searchTerm);
+
+    // Check if either result is null
+    if (!resultsByName || !resultsByUsername) {
+      return null; // Return null if either result is null
+    }
+
+    // Combine results from both searches
+    const combinedResults = {
+      ...resultsByName,
+      documents: [
+        ...resultsByName.documents,
+        ...resultsByUsername.documents.filter(user => (
+          !resultsByName.documents.some(u => u.$id === user.$id)
+        ))
+      ]
+    };
+
+    return combinedResults;
+  } catch (error) {
+    console.log(error);
+    return null; // Return null if there's an error
   }
 }
 

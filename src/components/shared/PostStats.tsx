@@ -102,14 +102,14 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     e: React.MouseEvent<HTMLImageElement, MouseEvent>
   ) => {
     e.stopPropagation();
-
-    // Show a confirmation dialog
-    const confirmFlag = window.confirm("Are you sure you want to flag this post? Please provide a reason.");
-
-    if (confirmFlag) {
+  
+    // Show a custom confirmation dialog with an input field
+    const reason = window.prompt("Are you sure you want to flag this post? Please provide a reason:");
+  
+    if (reason && reason.trim() !== "") {
       // Toggle flag state
       setIsFlagged(!isFlagged);
-
+  
       // Update local storage
       const flaggedPosts = JSON.parse(localStorage.getItem('flaggedPosts') || '{}');
       if (isFlagged) {
@@ -118,11 +118,15 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
         flaggedPosts[post.$id] = true;
       }
       localStorage.setItem('flaggedPosts', JSON.stringify(flaggedPosts));
-
+  
       // Flag/unflag the post in the database
       flagPost({ userId: userId, postId: post.$id });
+    } else {
+      // User did not provide a valid reason
+      // You can show an error message or handle it as needed
     }
   };
+  
 
   const handleRatePost = () => {
     const ratingPrompt = prompt("Please rate this post from 0.0 to 5.0. Once done successfully, this action will be irrevirsible. You can only rate once per post. Thank you!");

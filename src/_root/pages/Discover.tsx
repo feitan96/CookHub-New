@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
 import { Input } from "@/components/ui";
 import useDebounce from "@/hooks/useDebounce";
 import { GridPostList, Loader } from "@/components/shared";
 import { useGetPosts, useSearchPosts } from "@/lib/react-query/queries";
+import ScrollAreaDemo from "@/components/shared/TagsDropdown";
+import TagsDropdown from "@/components/shared/TagsDropdown";
 
 export type SearchResultProps = {
   isSearchFetching: boolean;
@@ -31,11 +33,21 @@ const Discover = () => {
   const debouncedSearch = useDebounce(searchValue, 500);
   const { data: searchedPosts, isFetching: isSearchFetching } = useSearchPosts(debouncedSearch);
 
+  const [showTags, setShowTags] = useState(false);
+
   useEffect(() => {
     if (inView && !searchValue) {
       fetchNextPage();
     }
   }, [inView, searchValue]);
+
+  const handleClearSearch = () => {
+    setSearchValue(""); // Clear the search value
+  };
+
+  const handleTagClick = (clickedTag: SetStateAction<string>) => {
+    setSearchValue(clickedTag); // Update searchValue when a tag is clicked
+  };
 
   if (!posts)
     return (
@@ -69,21 +81,41 @@ const Discover = () => {
               setSearchValue(value);
             }}
           />
+          <img
+            src="/assets/icons/clear.svg"
+            width={10}
+            height={10}
+            alt="clear"
+            onClick={handleClearSearch}
+            className="cursor-pointer"
+          />
         </div>
       </div>
 
-      <div className="flex-between w-full max-w-5xl mt-16 mb-7">
+ <div className="flex-between w-full max-w-5xl mt-16 mb-7">
         <h3 className="body-bold md:h3-bold">Popular Today</h3>
 
+        {showTags ? (
         <div className="flex-center gap-3 bg-dark-3 rounded-xl px-4 py-2 cursor-pointer">
-          <p className="small-medium md:base-medium text-light-2">All</p>
-          <img
-            src="/assets/icons/filter.svg"
-            width={20}
-            height={20}
-            alt="filter"
-          />
-        </div>
+        <p
+          className="small-medium md:base-medium text-light-2"
+          onClick={() => setShowTags(false)}
+        >
+          Back
+        </p>
+        <TagsDropdown handleTagClick={handleTagClick} />
+      </div>
+        ) : (
+          <div className="flex-center gap-3 bg-dark-3 rounded-xl px-4 py-2 cursor-pointer">
+            <p className="small-medium md:base-medium text-light-2" onClick={() => setShowTags(true)}>Filter</p>
+            <img
+              src="/assets/icons/filter.svg"
+              width={20}
+              height={20}
+              alt="filter"
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-9 w-full max-w-5xl">

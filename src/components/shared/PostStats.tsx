@@ -7,6 +7,8 @@ import {
   useLikePost,
   useSavePost,
   useDeleteSavedPost,
+  useFlagPost,
+  useDeleteFlaggedPost,
   useRatePost,
   useGetCurrentUser
 } from "@/lib/react-query/queries";
@@ -22,12 +24,15 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
 
   const [likes, setLikes] = useState<string[]>(likesList);
   const [isSaved, setIsSaved] = useState(false);
+  const [isFlagged, setIsFlagged] = useState(false);
   const [isRated, setIsRated] = useState(false);
   const [averageRating, setAverageRating] = useState(0);
 
   const { mutate: likePost } = useLikePost();
   const { mutate: savePost } = useSavePost();
+  const { mutate: flagPost } = useFlagPost();
   const { mutate: deleteSavePost } = useDeleteSavedPost();
+  const { mutate: deleteFlagPost } = useDeleteFlaggedPost();
   const { mutate: ratePostMutation } = useRatePost();
 
   const { data: currentUser } = useGetCurrentUser();
@@ -41,6 +46,12 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     // Calculate average rating when post data changes
     calculateAverageRating();
   }, [currentUser, post]);
+
+  useEffect(() => {
+    // Retrieve flag status from local storage
+    const flaggedPosts = JSON.parse(localStorage.getItem('flaggedPosts') || '{}');
+    setIsFlagged(!!flaggedPosts[post.$id]);
+  }, [post]);
 
   useEffect(() => {
     // Retrieve rated posts from local storage
@@ -85,6 +96,32 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
 
     savePost({ userId: userId, postId: post.$id });
     setIsSaved(true);
+  };
+
+  const handleFlagPost = (
+    e: React.MouseEvent<HTMLImageElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
+
+    // Show a confirmation dialog
+    const confirmFlag = window.confirm("Are you sure you want to flag this post? Please provide a reason.");
+
+    if (confirmFlag) {
+      // Toggle flag state
+      setIsFlagged(!isFlagged);
+
+      // Update local storage
+      const flaggedPosts = JSON.parse(localStorage.getItem('flaggedPosts') || '{}');
+      if (isFlagged) {
+        delete flaggedPosts[post.$id];
+      } else {
+        flaggedPosts[post.$id] = true;
+      }
+      localStorage.setItem('flaggedPosts', JSON.stringify(flaggedPosts));
+
+      // Flag/unflag the post in the database
+      flagPost({ userId: userId, postId: post.$id });
+    }
   };
 
   const handleRatePost = () => {
@@ -157,6 +194,15 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
           height={20}
           className="cursor-pointer"
           onClick={(e) => handleSavePost(e)}
+        />
+
+        <img
+          src={isFlagged ? "/assets/icons/flagged.svg" : "/assets/icons/flag2.svg"}
+          alt="share"
+          width={20}
+          height={20}
+          className="cursor-pointer"
+          onClick={(e) => handleFlagPost(e)}
         />
       </div>
     </div>

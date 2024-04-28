@@ -277,7 +277,7 @@ export async function searchByTags(searchTerm: string) {
     const posts = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.postCollectionId,
-      [Query.search("tags", searchTerm)]
+      [Query.search("caption", searchTerm)]
     );
 
     if (!posts) throw Error;
@@ -551,6 +551,7 @@ export async function savePost(userId: string, postId: string) {
     console.log(error);
   }
 }
+
 // ============================== DELETE SAVED POST
 export async function deleteSavedPost(savedRecordId: string) {
   try {
@@ -558,6 +559,44 @@ export async function deleteSavedPost(savedRecordId: string) {
       appwriteConfig.databaseId,
       appwriteConfig.savesCollectionId,
       savedRecordId
+    );
+
+    if (!statusCode) throw Error;
+
+    return { status: "Ok" };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ============================== FLAG POST
+export async function flagPost(userId: string, postId: string) {
+  try {
+    const updatedPost = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.flagsCollectionId,
+      ID.unique(),
+      {
+        flagsUsers: userId,
+        flagsPost: postId,
+      }
+    );
+
+    if (!updatedPost) throw Error;
+
+    return updatedPost;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ============================== DELETE FLAGGED POST
+export async function deleteFlaggedPost(flaggedRecordId: string) {
+  try {
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.flagsCollectionId,
+      flaggedRecordId
     );
 
     if (!statusCode) throw Error;

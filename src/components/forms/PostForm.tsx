@@ -72,6 +72,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
     const newPost = await createPost({
       ...value,
       userId: user.id,
+      caption: `${value.caption} Tags: ${value.tags}`, // Add tags to the caption
     });
 
     if (!newPost) {

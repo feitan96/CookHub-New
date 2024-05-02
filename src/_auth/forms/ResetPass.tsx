@@ -13,8 +13,7 @@ import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/querie
 import { SignupValidation } from "@/lib/validation";
 import { useUserContext } from "@/context/AuthContext";
 
-
-const SignupForm = () => {
+const ResetPass = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
@@ -28,9 +27,8 @@ const SignupForm = () => {
       password: "",
     },
   });
-  
 
-  // Queries
+  // Queries  
   const { mutateAsync: createUserAccount, isLoading: isCreatingAccount } = useCreateUserAccount();
   const { mutateAsync: signInAccount, isLoading: isSigningInUser } = useSignInAccount();
 
@@ -53,7 +51,6 @@ const SignupForm = () => {
         password: user.password,
       });
 
-
       if (!session) {
         toast({ title: "Something went wrong. Please login your new account", });
         
@@ -61,7 +58,7 @@ const SignupForm = () => {
         
         return;
       }
-      
+
       const isLoggedIn = await checkAuthUser();
 
       if (isLoggedIn) {
@@ -73,7 +70,6 @@ const SignupForm = () => {
         
         return;
       }
-      
     } catch (error) {
       console.log({ error });
     }
@@ -82,13 +78,12 @@ const SignupForm = () => {
   return (
     <Form {...form}>
       <div className="sm:w-420 flex-center flex-col">
-      <img src="/assets/images/cookhub.png" alt="logo" />
         
         <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12">
-          Create a new account
+          Password Recovery
         </h2>
         <p className="text-white small-medium md:base-regular mt-2">
-          To use CookHub, Please enter your details
+          Input your email and a link will be sent in your email.
         </p>
 
         <form
@@ -99,62 +94,18 @@ const SignupForm = () => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="shad-form_label">Name</FormLabel>
-                <FormControl>
-                  <Input type="text" className="shad-input" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="shad-form_label">Username</FormLabel>
-                <FormControl>
-                  <Input type="text" className="shad-input" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
                 <FormLabel className="shad-form_label">Email</FormLabel>
                 <FormControl>
                   <Input type="text" className="shad-input" {...field} />
                 </FormControl>
-                {/* Display error message if email format is incorrect */}
-                {form.formState.errors.email && (
-                  <FormMessage className="text-red-500">
-                    {form.formState.errors.email.message}
-                  </FormMessage>
-                )}
-              </FormItem>
-            )}
-          />
-
-
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="shad-form_label">Password</FormLabel>
-                <FormControl>
-                  <Input type="password" className="shad-input" {...field} />
-                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+          
+          
+
+          
 
           <Button type="submit" className="bg-[rgb(18,55,42)]">
             {isCreatingAccount || isSigningInUser || isUserLoading ? (
@@ -162,7 +113,7 @@ const SignupForm = () => {
                 <Loader /> Loading...
               </div>
             ) : (
-              "Sign Up"
+              "Reset Password"
             )}
           </Button>
 
@@ -180,4 +131,4 @@ const SignupForm = () => {
   );
 };
 
-export default SignupForm;
+export default ResetPass;

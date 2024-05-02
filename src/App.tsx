@@ -7,6 +7,7 @@ import RootLayout from './_root/RootLayout';
 import SigninForm from './_auth/forms/SigninForm';
 import SignupForm from './_auth/forms/SignupForm';
 import ForgotPass from './_auth/forms/ForgotPass';
+import ResetPass from './_auth/forms/ResetPass';
 
 import { Toaster } from "@/components/ui/toaster"
 import Discover from './_root/pages/Discover';
@@ -27,6 +28,7 @@ function App() {
                 <Route path="/sign-in" element={<SigninForm />} />
                 <Route path="/sign-up" element={<SignupForm />} />
                 <Route path="/forgot-pass" element={<ForgotPass />} />
+                <Route path="/reset-pass" element={<ResetPass />} />
               </Route>
 
               {/* Root layout routes */}

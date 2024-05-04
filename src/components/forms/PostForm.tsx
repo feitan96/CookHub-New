@@ -20,6 +20,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { useUserContext } from "@/context/AuthContext";
 import { FileUploader, Loader } from "@/components/shared";
 import { useCreatePost, useUpdatePost } from "@/lib/react-query/queries";
+import TagsMenu from "../shared/TagsMenu";
+import { useEffect, useState } from "react";
 
 type PostFormProps = {
   post?: Models.Document;
@@ -30,6 +32,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useUserContext();
+  const [tags, setTags] = useState<string[]>([]);
   const form = useForm<z.infer<typeof PostValidation>>({
     resolver: zodResolver(PostValidation),
     defaultValues: {
@@ -37,11 +40,16 @@ const PostForm = ({ post, action }: PostFormProps) => {
       caption: post ? post?.caption : "",
       file: [],
       location: post ? post.location : "",
-      ingredients: post ? post.ingredients.join("/ ") : "",
+      ingredients: post ? post.ingredients.join(", ") : "",
       instructions: post ? post.instructions.join("/ ") : "",
       tags: post ? post.tags.join(", ") : "",
     },
   });
+
+  useEffect(() => {
+    form.register('tags');
+  }, [form.register]);
+  
 
   // Query
   const { mutateAsync: createPost, isLoading: isLoadingCreate } =
@@ -82,6 +90,15 @@ const PostForm = ({ post, action }: PostFormProps) => {
     }
     navigate("/");
   };
+
+  const handleTagClick = (tag: string) => {
+    if (!tags.includes(tag)) {
+      const newTags = [...tags, tag];
+      setTags(newTags);
+      form.setValue('tags', newTags.join(', ')); // Update the tags field value
+    }
+  };
+  
 
   return (
     <Form {...form}>
@@ -161,7 +178,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="shad-form_label">
-                Add Ingredients (separated by forward slash " / ")
+                Add Ingredients (separated by comma " , ")
               </FormLabel>
               <FormControl>
                 <Textarea
@@ -194,24 +211,25 @@ const PostForm = ({ post, action }: PostFormProps) => {
           )}
         />
 
-        <FormField
+      <FormField
           control={form.control}
           name="tags"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">
-                Add Tags (separated by comma " , ")
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Budget-friendly, Vegan, High-calorie"
-                  type="text"
-                  className="shad-input"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage className="shad-form_message" />
-            </FormItem>
+            <FormLabel className="shad-form_label">
+              Add Tags (separated by comma " , ")
+            </FormLabel>
+            <TagsMenu onTagClick={handleTagClick} />
+            <FormControl>
+              <Input
+                placeholder="Budget-friendly, Vegan, High-calorie"
+                type="text"
+                className="shad-input"
+                {...field}
+              />
+            </FormControl>
+            <FormMessage className="shad-form_message" />
+          </FormItem>
           )}
         />
         

@@ -152,7 +152,7 @@ export async function createPost(post: INewPost) {
     }
 
     // Convert tags into array
-    const ingredients = post.ingredients?.split("/") || [];
+    const ingredients = post.ingredients?.split(",") || [];
     const instructions = post.instructions?.split("/") || [];
     const tags = post.tags?.replace(/ /g, "").split(",") || [];
 
@@ -447,7 +447,7 @@ export async function updatePost(post: IUpdatePost) {
     }
 
     // Convert tags into array
-    const ingredients = post.ingredients?.split("/") || [];
+    const ingredients = post.ingredients?.split(",") || [];
     const instructions = post.instructions?.split("/") || [];
     const tags = post.tags?.replace(/ /g, "").split(",") || [];
 

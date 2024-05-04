@@ -80,14 +80,16 @@ const Discover = () => {
               setSearchValue(value);
             }}
           />
-          <img
-            src="/assets/icons/clear.svg"
-            width={10}
-            height={10}
-            alt="clear"
-            onClick={handleClearSearch}
-            className="cursor-pointer"
-          />
+          {searchValue && (
+            <img
+              src="/assets/icons/clear.svg"
+              width={10}
+              height={10}
+              alt="clear"
+              onClick={handleClearSearch}
+              className="cursor-pointer"
+            />
+          )}
         </div>
       </div>
 

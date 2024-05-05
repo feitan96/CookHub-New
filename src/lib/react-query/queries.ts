@@ -30,6 +30,8 @@ import {
   searchUsers,
   flagPost,
   deleteFlaggedPost,
+  getCommentsForPost,
+  deleteRating,
 } from "@/lib/appwrite/api";
 import { IComment, INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
 
@@ -115,13 +117,17 @@ export const useCreatePost = () => {
 export const useCommentPost = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (comment: IComment) => commentPost(comment),
+    mutationFn: (post: IComment) => commentPost(post),
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id],
       });
     },
   });
+};
+
+export const useCommentsForPost = (postId: string) => {
+  return useQuery(['comments', postId], () => getCommentsForPost(postId));
 };
 
 export const useGetPostById = (postId?: string) => {
@@ -271,6 +277,24 @@ export const useRatePost = () => {
   return useMutation({
     mutationFn: ({ postId, userId, rating }: { postId: string; userId: string; rating: number }) =>
       ratePost(postId, userId, rating),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POSTS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+      });
+    },
+  });
+};
+
+export const useDeleteRating = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (ratingId: string) => deleteRating(ratingId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],

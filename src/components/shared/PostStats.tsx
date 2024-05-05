@@ -12,6 +12,8 @@ import {
   useRatePost,
   useGetCurrentUser
 } from "@/lib/react-query/queries";
+import ShareLink from "./ShareLink";
+import RateDrawer from "./RateDrawer";
 
 type PostStatsProps = {
   post: Models.Document;
@@ -34,12 +36,17 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   const { mutate: deleteSavePost } = useDeleteSavedPost();
   const { mutate: deleteFlagPost } = useDeleteFlaggedPost();
   const { mutate: ratePostMutation } = useRatePost();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const { data: currentUser } = useGetCurrentUser();
 
   const savedPostRecord = currentUser?.save.find(
     (record: Models.Document) => record.post.$id === post.$id
   );
+
+  useEffect(() => {
+    console.log('isDrawerOpen state:', isDrawerOpen);
+  }, [isDrawerOpen]);  
 
   useEffect(() => {
     setIsSaved(!!savedPostRecord);
@@ -126,26 +133,19 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
       // You can show an error message or handle it as needed
     }
   };
-  
 
-  const handleRatePost = () => {
-    const ratingPrompt = prompt("Please rate this post from 0.0 to 5.0. Once done successfully, this action will be irrevirsible. You can only rate once per post. Thank you!");
-    if (ratingPrompt === null) return; // If prompt is cancelled, exit the function
-    const ratingInput = parseFloat(ratingPrompt);
-    if (ratingInput >= 0 && ratingInput <= 5) {
-      // Update rated state and store in local storage
-      setIsRated(true);
-      const ratedPosts = JSON.parse(localStorage.getItem('ratedPosts') || '{}');
-      const userRatings = Array.isArray(ratedPosts[post.$id]) ? ratedPosts[post.$id] : [];
-      // Add current user to the list of rated users for this post
-      ratedPosts[post.$id] = [...userRatings, userId];
-      localStorage.setItem('ratedPosts', JSON.stringify(ratedPosts));
-      ratePostMutation({ postId: post.$id, userId, rating: ratingInput });
-    } else {
-      alert("Please enter a valid rating between 0.0 and 5.0");
-    }
+  const handleRatePost = (rating: number) => {
+    // Update rated state and store in local storage
+    setIsRated(true);
+    const ratedPosts = JSON.parse(localStorage.getItem('ratedPosts') || '{}');
+    const userRatings = Array.isArray(ratedPosts[post.$id]) ? ratedPosts[post.$id] : [];
+    // Add current user to the list of rated users for this post
+    ratedPosts[post.$id] = [...userRatings, userId];
+    localStorage.setItem('ratedPosts', JSON.stringify(ratedPosts));
+    ratePostMutation({ postId: post.$id, userId, rating });
+    setIsDrawerOpen(false);
   };
-  
+
   const containerStyles = location.pathname.startsWith("/profile")
     ? "w-full"
     : "";
@@ -169,23 +169,32 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
         <p className="small-medium lg:base-medium">{likes.length}</p>
         {/* Show different icons based on whether the post is rated or not */}
         {isRated ? (
-          <img
-            src="/assets/icons/rated2.svg"
-            alt="rated"
-            width={20}
-            height={20}
-            className="cursor-pointer"
-          />
-        ) : (
-          <img
-            src="/assets/icons/rate2.svg"
-            alt="rate"
-            width={20}
-            height={20}
-            className="cursor-pointer"
-            onClick={handleRatePost}
-          />
-        )}
+  <img
+    src="/assets/icons/rated2.svg"
+    alt="rated"
+    width={20}
+    height={20}
+    className="cursor-pointer"
+  />
+) : (
+  <>
+    {!isDrawerOpen && (
+      <img
+        src="/assets/icons/rate2.svg"
+        alt="rate"
+        width={20}
+        height={20}
+        className="cursor-pointer"
+        onClick={() => {
+          console.log('Rate2 icon clicked');
+          setIsDrawerOpen(true);
+        }}
+      />
+    )}
+    {isDrawerOpen && <RateDrawer onClose={() => setIsDrawerOpen(false)} onSubmit={handleRatePost} />}
+  </>
+)}
+
         {/* Display the average rating */}
         <p>{averageRating.toFixed(1)}</p>
       </div>
@@ -208,6 +217,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
           className="cursor-pointer"
           onClick={(e) => handleFlagPost(e)}
         />
+        <ShareLink/>
       </div>
     </div>
   );

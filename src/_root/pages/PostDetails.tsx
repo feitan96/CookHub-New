@@ -8,17 +8,23 @@ import {
   useGetPostById,
   useGetUserPosts,
   useDeletePost,
+  useCommentsForPost,
 } from "@/lib/react-query/queries";
 import { multiFormatDateString } from "@/lib/utils";
 import { useUserContext } from "@/context/AuthContext";
 import CommentForm from "@/components/forms/CommentForm";
-import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from "react";
 
 const PostDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { user } = useUserContext();
-
+  
+  if (!id) {
+    // Replace this with your preferred error handling
+    return <p>Error: Post ID is missing.</p>;
+  }
+  
+  const { data: comments, isLoading: isLoadingComments } = useCommentsForPost(id);
   const { data: post, isLoading } = useGetPostById(id);
   const { data: userPosts, isLoading: isUserPostLoading } = useGetUserPosts(
     post?.creator.$id
@@ -36,7 +42,6 @@ const PostDetails = () => {
       navigate(-1);
     }
   };
-
 
   return (
     <div className="post_details-container">
@@ -175,21 +180,19 @@ const PostDetails = () => {
 
             <hr className="border w-full border-dark-4/80" />
 
-            <CommentForm action={"Create"} comment={post}/>
-            {/* display the comments here, map them, show the profile photo of the user that commented and then right of it is the comment*/}
+            <CommentForm action={"Create"} postId={post?.$id} />
             <div className="post_details-comments">
               <h3 className="body-bold">Comments</h3>
-              {post?.comments.map((comment: { user: { imageUrl: any; }; text: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; }, index: Key | null | undefined) => (
-                <div key={index} className="comment">
-                  {/* Replace with actual comment content */}
-                  <img
-                    src={post?.creator.imageUrl || "/assets/icons/profile-placeholder.svg"}
-                    alt="user"
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <p className="small-regular">{comment.text}</p>
-                </div>
-              ))}
+              {isLoadingComments ? (
+                <p>Loading comments...</p>
+              ) : (
+                comments?.documents.map((comment: any) => (
+                  <div key={comment.$id}>
+                    <p>{comment.comment}</p>
+                    <p>Posted by: {comment.users}</p>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

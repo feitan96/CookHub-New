@@ -11,14 +11,16 @@ import {
 } from "@/lib/react-query/queries";
 import { multiFormatDateString } from "@/lib/utils";
 import { useUserContext } from "@/context/AuthContext";
-import CommentForm from "@/components/forms/CommentForm";
-import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from "react";
 
 const PostDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { user } = useUserContext();
-
+  
+  if (!id) {
+    return <p>Error: Post ID is missing.</p>;
+  }
+  
   const { data: post, isLoading } = useGetPostById(id);
   const { data: userPosts, isLoading: isUserPostLoading } = useGetUserPosts(
     post?.creator.$id
@@ -36,7 +38,6 @@ const PostDetails = () => {
       navigate(-1);
     }
   };
-
 
   return (
     <div className="post_details-container">
@@ -172,25 +173,7 @@ const PostDetails = () => {
             <div className="w-full">
               <PostStats post={post} userId={user.id} />
             </div>
-
-            <hr className="border w-full border-dark-4/80" />
-
-            <CommentForm action={"Create"} comment={post}/>
-            {/* display the comments here, map them, show the profile photo of the user that commented and then right of it is the comment*/}
-            <div className="post_details-comments">
-              <h3 className="body-bold">Comments</h3>
-              {post?.comments.map((comment: { user: { imageUrl: any; }; text: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; }, index: Key | null | undefined) => (
-                <div key={index} className="comment">
-                  {/* Replace with actual comment content */}
-                  <img
-                    src={post?.creator.imageUrl || "/assets/icons/profile-placeholder.svg"}
-                    alt="user"
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <p className="small-regular">{comment.text}</p>
-                </div>
-              ))}
-            </div>
+            {/*COMMENT FEATURE HERE*/}
           </div>
         </div>
       )}

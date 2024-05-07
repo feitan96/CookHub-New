@@ -12,17 +12,18 @@ import { Loader } from "../shared";
 
 
 type CommentFormProps = {
-    comment?: Models.Document;
+  post?: Models.Document;
     action: "Create";
+    postId: string;
 };
 
-const CommentForm = ({ comment, action }: CommentFormProps) => {
+const CommentForm = ({ post, action, postId  }: CommentFormProps) => {
     const navigate = useNavigate();
   const { user } = useUserContext();
   const form = useForm<z.infer<typeof CommentValidation>>({
     resolver: zodResolver(CommentValidation),
     defaultValues: {
-      comment: comment ? comment?.comment : "",
+      comment: post ? post?.comment : "",
     },
   });
 
@@ -36,7 +37,7 @@ const CommentForm = ({ comment, action }: CommentFormProps) => {
         const newComment = await commentPost({
             ...value,
             userId: user.id,
-            postId: ""
+            postId: postId
         });
     
         if (!newComment) {

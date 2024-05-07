@@ -185,16 +185,16 @@ export async function createPost(post: INewPost) {
   }
 }
 // ============================== COMMENT POST
-export async function commentPost(comment: IComment) {
+export async function commentPost(post: IComment) {
   try {
     const newComment = await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.commentsCollectionId,
       ID.unique(),
       {
-        posts: comment.postId,
-        users: comment.userId,
-        comment: comment.comment,
+        posts: post.postId,
+        users: post.userId,
+        comment: post.comment,
       }
     );
 
@@ -203,6 +203,24 @@ export async function commentPost(comment: IComment) {
     }
 
     return newComment;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getCommentsForPost(postId: string) {
+  try {
+    const comments = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.commentsCollectionId,
+      [`posts=${postId}`]
+    );
+
+    if (!comments) {
+      throw Error;
+    }
+
+    return comments;
   } catch (error) {
     console.log(error);
   }
@@ -624,6 +642,23 @@ export async function ratePost(postId: string, userId: string, rating: number) {
     if (!newRating) throw Error;
 
     return newRating;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ============================== DELETE RATING
+export async function deleteRating(ratingId: string) {
+  try {
+    const deletedRating = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.ratingsCollectionId,
+      ratingId
+    );
+
+    if (!deletedRating) throw Error;
+
+    return deletedRating;
   } catch (error) {
     console.log(error);
   }

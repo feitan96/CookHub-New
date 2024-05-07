@@ -28,7 +28,7 @@ const UserCard = ({ user }: UserCardProps) => {
       </div>
 
       {loggedInUser.id !== user.$id && ( // Only show the Follow button for other users
-        <Button type="button" size="sm" className="shad-button_primary px-5">
+        <Button type="button" size="sm" className="shad-button_primary px-5 bg-[rgb(18,55,42)]">
           Follow
         </Button>
       )}

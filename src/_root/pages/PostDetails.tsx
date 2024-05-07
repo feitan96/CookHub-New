@@ -8,11 +8,9 @@ import {
   useGetPostById,
   useGetUserPosts,
   useDeletePost,
-  useCommentsForPost,
 } from "@/lib/react-query/queries";
 import { multiFormatDateString } from "@/lib/utils";
 import { useUserContext } from "@/context/AuthContext";
-import CommentForm from "@/components/forms/CommentForm";
 
 const PostDetails = () => {
   const navigate = useNavigate();
@@ -20,11 +18,9 @@ const PostDetails = () => {
   const { user } = useUserContext();
   
   if (!id) {
-    // Replace this with your preferred error handling
     return <p>Error: Post ID is missing.</p>;
   }
   
-  const { data: comments, isLoading: isLoadingComments } = useCommentsForPost(id);
   const { data: post, isLoading } = useGetPostById(id);
   const { data: userPosts, isLoading: isUserPostLoading } = useGetUserPosts(
     post?.creator.$id
@@ -177,23 +173,7 @@ const PostDetails = () => {
             <div className="w-full">
               <PostStats post={post} userId={user.id} />
             </div>
-
-            <hr className="border w-full border-dark-4/80" />
-
-            <CommentForm action={"Create"} postId={post?.$id} />
-            <div className="post_details-comments">
-              <h3 className="body-bold">Comments</h3>
-              {isLoadingComments ? (
-                <p>Loading comments...</p>
-              ) : (
-                comments?.documents.map((comment: any) => (
-                  <div key={comment.$id}>
-                    <p>{comment.comment}</p>
-                    <p>Posted by: {comment.users}</p>
-                  </div>
-                ))
-              )}
-            </div>
+            {/*COMMENT FEATURE HERE*/}
           </div>
         </div>
       )}

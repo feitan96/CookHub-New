@@ -3,6 +3,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Loader, UserCard } from "@/components/shared";
 import { useGetUsers, useSearchUsers } from "@/lib/react-query/queries";
 import { Input } from "@/components/ui";
+import ChatSheet from "@/components/shared/ChatSheet";
 
 const AllUsers = () => {
   const { toast } = useToast();
@@ -29,6 +30,8 @@ const AllUsers = () => {
               setSearchValue(value);
             }}
           />
+        <ChatSheet/>
+
         {isLoading && !creators ? (
           <Loader />
         ) : (

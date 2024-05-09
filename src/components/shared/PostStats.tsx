@@ -14,6 +14,7 @@ import {
 } from "@/lib/react-query/queries";
 import ShareLink from "./ShareLink";
 import RateDrawer from "./RateDrawer";
+import { toast } from "../ui";
 
 type PostStatsProps = {
   post: Models.Document;
@@ -74,36 +75,47 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     const average = totalRatings > 0 ? sumRatings / totalRatings : 0;
     setAverageRating(average);
   };
+  
   const handleLikePost = (
     e: React.MouseEvent<HTMLImageElement, MouseEvent>
   ) => {
     e.stopPropagation();
-
+  
     let likesArray = [...likes];
-
+    let toastTitle = "";
+  
     if (likesArray.includes(userId)) {
       likesArray = likesArray.filter((Id) => Id !== userId);
+      toastTitle = "Unliked Post";
     } else {
       likesArray.push(userId);
+      toastTitle = "Liked Post";
     }
-
+  
     setLikes(likesArray);
     likePost({ postId: post.$id, likesArray });
+    toast({ title: toastTitle });
   };
-
+  
   const handleSavePost = (
     e: React.MouseEvent<HTMLImageElement, MouseEvent>
   ) => {
     e.stopPropagation();
-
+    let toastTitle = "";
+  
     if (savedPostRecord) {
       setIsSaved(false);
-      return deleteSavePost(savedPostRecord.$id);
+      deleteSavePost(savedPostRecord.$id);
+      toastTitle = "Post Unsaved";
+    } else {
+      savePost({ userId: userId, postId: post.$id });
+      setIsSaved(true);
+      toastTitle = "Post Saved";
     }
-
-    savePost({ userId: userId, postId: post.$id });
-    setIsSaved(true);
+  
+    toast({ title: toastTitle });
   };
+  
 
   const handleFlagPost = (
     e: React.MouseEvent<HTMLImageElement, MouseEvent>
@@ -128,9 +140,9 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   
       // Flag/unflag the post in the database
       flagPost({ userId: userId, postId: post.$id });
+      toast({ title: "Flagged Post", });
     } else {
-      // User did not provide a valid reason
-      // You can show an error message or handle it as needed
+      toast({ title: "Provide a valid reason for flagging.", });
     }
   };
 
@@ -144,6 +156,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     localStorage.setItem('ratedPosts', JSON.stringify(ratedPosts));
     ratePostMutation({ postId: post.$id, userId, rating });
     setIsDrawerOpen(false);
+    toast({ title: "Post Successfully Rated", });
   };
 
   const containerStyles = location.pathname.startsWith("/profile")

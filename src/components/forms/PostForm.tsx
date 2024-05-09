@@ -73,6 +73,17 @@ const PostForm = ({ post, action }: PostFormProps) => {
           title: `${action} post failed. Please try again.`,
         });
       }
+
+      if (!updatedPost) {
+        toast({
+          title: `${action} post failed. Please try again.`,
+        });
+      } else {
+        toast({
+          title: "Post Updated",
+        });
+      }
+
       return navigate(`/posts/${post.$id}`);
     }
 
@@ -88,6 +99,17 @@ const PostForm = ({ post, action }: PostFormProps) => {
         title: `${action} post failed. Please try again.`,
       });
     }
+
+    if (!newPost) {
+      toast({
+        title: `${action} post failed. Please try again.`,
+      });
+    } else {
+      toast({
+        title: "Post Created",
+      });
+    }
+    
     navigate("/");
   };
 

@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 
-import { Button } from "@/components/ui";
+import { Button, toast } from "@/components/ui";
 import { Loader } from "@/components/shared";
 import { GridPostList, PostStats } from "@/components/shared";
 
@@ -95,6 +95,7 @@ const handleSubmit = async (e: { preventDefault: () => void }) => {
       payload
   )
   console.log('CREATED:', response)
+  toast({ title: "Comment Posted", });
 
   setMessageBody('')
 }
@@ -102,7 +103,8 @@ const handleSubmit = async (e: { preventDefault: () => void }) => {
   
   const deleteMessage = async (id: string) => {
     await databases.deleteDocument(appwriteConfig.databaseId, appwriteConfig.commentsCollectionId, id);
- } 
+    toast({ title: "Comment Deleted", });
+  } 
   
   if (!id) {
     return <p>Error: Post ID is missing.</p>;
@@ -123,6 +125,7 @@ const handleSubmit = async (e: { preventDefault: () => void }) => {
     if (isConfirmed) {
       deletePost({ postId: id, imageId: post?.imageId });
       navigate(-1);
+      toast({ title: "Deleted Post", });
     }
   };
 
@@ -294,7 +297,7 @@ const handleSubmit = async (e: { preventDefault: () => void }) => {
                                 />
 
                                 <div>
-                                  <p className="flex flex-col"> 
+                                  <p className="flex flex-row"> 
                                       {message?.username ? (
                                           <span> {message?.username}</span>
                                       ): (
@@ -311,7 +314,7 @@ const handleSubmit = async (e: { preventDefault: () => void }) => {
                                 />
                               )}
                             </div>
-                            <div className="message--body">
+                            <div className="message--body" style={{marginLeft: '55px', marginTop: '-20px'}}>
                                 <span>{message.comment}</span>
                             </div>
 

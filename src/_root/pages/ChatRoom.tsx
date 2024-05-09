@@ -99,13 +99,14 @@ const ChatRoom = () => {
           payload
       )
       console.log('CREATED:', response)
-
+      toast({ title: "Message Sent", });
       setMessageBody('')
   }
     
     const deleteMessage = async (id: string) => {
       await databases.deleteDocument(appwriteConfig.databaseId, appwriteConfig.messagesCollectionId, id);
-   } 
+      toast({ title: "Message Deleted" });
+    } 
 
   return (
     <Sheet>
@@ -119,6 +120,7 @@ const ChatRoom = () => {
       <SheetContent className="bg-black" style={{ width: '80%', maxWidth: '700px' }}>
         <main className="container">
           <div className="room--container">
+          <h2 className="h3-bold md:h2-bold text-left w-full mb-4">Global Chat</h2>
               <form id="message--form" onSubmit={handleSubmit}>
                 <div>
                     <textarea 
@@ -138,22 +140,23 @@ const ChatRoom = () => {
                 {messages.map(message => (
                     <div key={message.$id} className="message--wrapper">
                         <div className="message--header">
-                          <div className="flex items-center gap-3" style={{ marginTop: '24px' }}>
-
+                          <div className="flex  gap-3" style={{ marginTop: '24px' }}>
                             <img 
                               src={message.imageUrl ||
                                 "/assets/icons/profile-placeholder.svg"} 
                               alt={message.username} 
                               className="user-image w-12 lg:h-12 rounded-full" 
                             />
-
-                            <p className="flex flex-col"> 
+                          <div>
+                            
+                          </div>
+                            <p className="flex flex-row"> 
                                 {message?.username ? (
                                     <span> {message?.username}</span>
                                 ): (
                                     'Anonymous user'
                                 )}
-                                <small className="message-timestamp">{multiFormatDateString(message.$createdAt)}</small>
+                                <p className="message-timestamp">{multiFormatDateString(message.$createdAt)}</p>
                             </p>
                           </div>
                           {user.id === message.user_id && (
@@ -163,8 +166,7 @@ const ChatRoom = () => {
                               />
                           )}
                         </div>
-
-                        <div className="message--body">
+                        <div className="message--body" style={{marginLeft: '65px', marginTop: '-20px'}}>
                             <span>{message.body}</span>
                         </div>
                     </div>

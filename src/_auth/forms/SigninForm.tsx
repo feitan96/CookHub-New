@@ -32,7 +32,7 @@ const SigninForm = () => {
     const session = await signInAccount(user);
 
     if (!session) {
-      toast({ title: "Login failed. Please try again." });
+      toast({ title: "Invalid credentials. Please check the email and password." });
       
       return;
     }

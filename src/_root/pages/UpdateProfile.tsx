@@ -70,6 +70,7 @@ const UpdateProfile = () => {
       bio: updatedUser?.bio,
       imageUrl: updatedUser?.imageUrl,
     });
+    toast({ title: "Profile Updated" });
     return navigate(`/profile/${id}`);
   };
 

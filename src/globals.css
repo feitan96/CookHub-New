@@ -450,6 +450,7 @@ input[type="text"], input[type="password"], input[type="email"], textarea{
 }
 
 .message-timestamp{
+  padding-left: 0.5em;
   color: rgb(164, 161, 161);
 }
 

@@ -2,7 +2,7 @@ import { Models } from "appwrite";
 
 import { Loader, PostCard, UserCard } from "@/components/shared";
 import { useGetRecentPosts, useGetUsers } from "@/lib/react-query/queries";
-import ChatSheet from "@/components/shared/ChatSheet";
+import ChatRoom from "./ChatRoom";
 
 const Home = () => {
   const {
@@ -50,7 +50,7 @@ const Home = () => {
 
       <div className="home-creators">
         <h3 className="h3-bold text-light-1">Top Cooks</h3>
-        <ChatSheet/>
+        <ChatRoom/>
         {isUserLoading && !creators ? (
           <Loader />
         ) : (

@@ -258,7 +258,7 @@
   }
 
   .shad-input {
-    @apply h-12 bg-dark-4 border-none placeholder:text-green-500 focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
+    @apply h-12 bg-dark-4 border-none placeholder:text-light-4 focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
   }
 
   .shad-textarea {
@@ -433,6 +433,16 @@ input[type="text"], input[type="password"], input[type="email"], textarea{
   max-width: 100%;
   word-wrap: break-word; /* added */
 }
+.comment--body{
+  padding: 0;
+  color: var(--textColorSecondary);
+  background-color: var(--themeColorMain);
+  padding: 1em;
+  border-radius: 20px;
+  width:fit-content;
+  max-width: 100%;
+  word-wrap: break-word; /* added */
+}
 
 .message--body--owner{
   border: 1px solid rgba(219,26,90,1);
@@ -440,7 +450,6 @@ input[type="text"], input[type="password"], input[type="email"], textarea{
 }
 
 .message-timestamp{
-  margin-left: 1em;
   color: rgb(164, 161, 161);
 }
 

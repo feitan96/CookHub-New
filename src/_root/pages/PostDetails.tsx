@@ -11,11 +11,98 @@ import {
 } from "@/lib/react-query/queries";
 import { multiFormatDateString } from "@/lib/utils";
 import { useUserContext } from "@/context/AuthContext";
+import { useEffect, useState } from "react";
+import { appwriteConfig, client, databases } from "@/lib/appwrite/config";
+import { ID, Query } from "appwrite";
+import { Trash2 } from "react-feather";
+
+type Message = {
+  user_id: string
+  username: any
+  $id: string;
+  $createdAt: number;
+  comment: string;
+  imageUrl: string;
+}
 
 const PostDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { user } = useUserContext();
+  const [messageBody, setMessageBody] = useState<string>('')
+  const [messages, setMessages] = useState<Message[]>([])
+
+  useEffect(() => {
+    getMessages();
+  
+    const unsubscribe = client.subscribe(`databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messagesCollectionId}.documents`, response => {
+  
+      if(response.events.includes("databases.*.collections.*.documents.*.create")){
+        console.log('A MESSAGE WAS CREATED')
+        setMessages(prevState => [(response.payload as Message), ...prevState])
+      }
+  
+      if(response.events.includes("databases.*.collections.*.documents.*.delete")){
+        console.log('A MESSAGE WAS DELETED!!!')
+        setMessages(prevState => prevState.filter(message => message.$id !== (response.payload as Message).$id))
+      }
+    });
+  
+    console.log('unsubscribe:', unsubscribe)
+  
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+  
+
+  const getMessages = async () => {
+    const response = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.commentsCollectionId,
+        [
+            Query.orderDesc('$createdAt'),
+            Query.limit(100),
+            Query.equal('post_id', id)
+        ]
+    )
+    console.log(response.documents)
+    setMessages(response.documents)
+}
+
+
+const handleSubmit = async (e: { preventDefault: () => void }) => {
+  e.preventDefault()
+
+  // Check if the messageBody is not empty
+  if (messageBody.trim() === '') {
+      alert('Comment cannot be empty');
+      return;
+  }
+
+  let payload = {
+      user_id: user.id,  
+      username: user.name,
+      comment: messageBody,
+      imageUrl: user.imageUrl,
+      post_id: id
+  }
+
+  let response = await databases.createDocument(
+      appwriteConfig.databaseId, 
+      appwriteConfig.commentsCollectionId, 
+      ID.unique(), 
+      payload
+  )
+  console.log('CREATED:', response)
+
+  setMessageBody('')
+}
+
+  
+  const deleteMessage = async (id: string) => {
+    await databases.deleteDocument(appwriteConfig.databaseId, appwriteConfig.commentsCollectionId, id);
+ } 
   
   if (!id) {
     return <p>Error: Post ID is missing.</p>;
@@ -174,6 +261,66 @@ const PostDetails = () => {
               <PostStats post={post} userId={user.id} />
             </div>
             {/*COMMENT FEATURE HERE*/}
+            <hr className="border w-full border-dark-4/80" />
+
+            <p className="mb-2 text-lg font-bold">Comments</p> 
+            <main className="container" style={{ width: '100%', maxWidth: '1000px' }}>
+              <div className="room--container">
+                  <form id="message--form" onSubmit={handleSubmit}>
+                    <div>
+                        <textarea 
+                            required 
+                            className="text-white"
+                            placeholder="Say something about post..." 
+                            onChange={(e) => {setMessageBody(e.target.value)}}
+                            value={messageBody}
+                            ></textarea>
+                    </div>
+
+                    <div className="send-btn--wrapper bg-dark-2">
+                        <input className="btn btn--secondary" type="submit" value="post comment"/>
+                    </div>
+                  </form>
+                  <div className="custom-scrollbar bg-dark-2" style={{  overflowY: 'auto', maxHeight: '700px', paddingTop: '5px'  }}>
+                    {messages.map(message => (
+                        <div key={message.$id} className="message--wrapper" style={{marginBottom: '25px', marginTop: '25px'}}>
+                            <div className="message--header">
+                              <div className="flex gap-3">
+                                <img 
+                                  src={message.imageUrl ||
+                                    "/assets/icons/profile-placeholder.svg"} 
+                                  alt={message.username} 
+                                  className="user-image w-12 lg:h-12 rounded-full" 
+                                />
+
+                                <div>
+                                  <p className="flex flex-col"> 
+                                      {message?.username ? (
+                                          <span> {message?.username}</span>
+                                      ): (
+                                          'Anonymous user'
+                                      )}
+                                      <p className="message-timestamp">{multiFormatDateString(message.$createdAt)}</p>
+                                  </p>
+                                </div>
+                              </div>
+                              {user.id === message.user_id && (
+                                <Trash2 
+                                    className="delete--btn"
+                                    onClick={() => {deleteMessage(message.$id)}}
+                                />
+                              )}
+                            </div>
+                            <div className="message--body">
+                                <span>{message.comment}</span>
+                            </div>
+
+                        </div>
+                    ))}
+                </div>
+              
+                </div>
+            </main>
           </div>
         </div>
       )}

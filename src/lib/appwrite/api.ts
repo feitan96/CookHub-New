@@ -1,7 +1,8 @@
 import { ID, Query } from "appwrite";
 
 import { appwriteConfig, account, databases, storage, avatars } from "./config";
-import { IUpdatePost, INewPost, INewUser, IUpdateUser, IComment } from "@/types";
+import { IUpdatePost, INewPost, INewUser, IUpdateUser, IComment, emailverify } from "@/types";
+
 
 // ============================================================
 // AUTH
@@ -15,12 +16,12 @@ export async function createUserAccount(user: INewUser) {
       user.email,
       user.password,
       user.name
-    );
+    ); 
 
     if (!newAccount) throw Error;
-
+    
     // Add email verification
-    const promise = account.createVerification("http://localhost:5173");
+    const promise = account.createVerification("http://localhost:5173/home");
     promise.then(
       function (response) {
         console.log(response); // Success
@@ -54,6 +55,8 @@ export async function createUserAccount(user: INewUser) {
     return error;
   }
 }
+//Recover Account
+
 
 // ============================== SAVE USER TO DB
 export async function saveUserToDB(user: {
@@ -725,5 +728,22 @@ export async function updateUser(user: IUpdateUser) {
     return updatedUser;
   } catch (error) {
     console.log(error);
+  }
+}
+
+export async function verifyEmail(user: emailverify): Promise<boolean> {
+  try {
+    // Query the user collection for the specified email
+    const result = await databases.listDocuments(appwriteConfig.databaseId, appwriteConfig.userCollectionId, [
+      // Use a query filter to search for the email
+      `email=${user.email}`
+    ]);
+
+    // Check if any documents are found
+    return result.total > 0;
+  } catch (error) {
+    // Handle errors appropriately
+    console.error('Error verifying email:', error);
+    throw error; // Re-throw the error to be handled by the caller
   }
 }

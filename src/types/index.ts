@@ -44,6 +44,7 @@ export type IComment = {
 };
 
 export type IUser = {
+  $id: any;
   id: string;
   name: string;
   username: string;

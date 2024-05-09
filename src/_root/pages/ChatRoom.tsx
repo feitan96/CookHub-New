@@ -21,10 +21,12 @@ import { AuthProvider, useUserContext } from "@/context/AuthContext";
 
 // Define the type for your message
 type Message = {
+  user_id: string
   username: any
   $id: string;
   $createdAt: number;
   body: string;
+  imageUrl: string;
 }
 
 const ChatRoom = () => {
@@ -79,7 +81,8 @@ const ChatRoom = () => {
       let payload = {
           user_id:user.id,  
           username:user.name,
-          body:messageBody
+          body:messageBody,
+          imageUrl:user.imageUrl
       }
 
       let response = await databases.createDocument(
@@ -106,7 +109,7 @@ const ChatRoom = () => {
         }}
         >Chat With Others</Button>
       </SheetTrigger>
-      <SheetContent className="bg-black">
+      <SheetContent className="bg-black" style={{ width: '80%', maxWidth: '700px' }}>
         <main className="container">
           <div className="room--container">
               <form id="message--form" onSubmit={handleSubmit}>
@@ -124,32 +127,42 @@ const ChatRoom = () => {
                     <input className="btn btn--secondary" type="submit" value="send"/>
                 </div>
               </form>
+              <div className="custom-scrollbar" style={{  overflowY: 'auto', maxHeight: '700px' }}>
+                {messages.map(message => (
+                    <div key={message.$id} className="message--wrapper">
+                        <div className="message--header">
+                          <div className="flex items-center gap-3">
 
-                <div>
-                    {messages.map(message => (
-                      <div key={message.$id} className="message--wrapper">
-                          <div className="message--header">
-                          <p className="flex flex-col"> 
-                            {message?.username ? (
-                                <span> {message?.username}</span>
-                            ): (
-                                'Anonymous user'
-                            )}
-                         
-                            <small className="message-timestamp"> {new Date(message.$createdAt).toLocaleString()}</small>
-                        </p>
-                                <Trash2 
+                            <img 
+                              src={message.imageUrl ||
+                                "/assets/icons/profile-placeholder.svg"} 
+                              alt={message.username} 
+                              className="user-image w-12 lg:h-12 rounded-full" 
+                            />
+
+                            <p className="flex flex-col"> 
+                                {message?.username ? (
+                                    <span> {message?.username}</span>
+                                ): (
+                                    'Anonymous user'
+                                )}
+                                <small className="message-timestamp">{new Date(message.$createdAt).toLocaleString()}</small>
+                            </p>
+                          </div>
+                          {user.id === message.user_id && (
+                              <Trash2 
                                   className="delete--btn"
                                   onClick={() => {deleteMessage(message.$id)}}
-                                />
-                          </div>
+                              />
+                          )}
+                        </div>
 
-                          <div className="message--body">
-                                <span>{message.body}</span>
-                          </div>
-                      </div>
-                    ))}
-                </div>
+                        <div className="message--body">
+                            <span>{message.body}</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
           
             </div>
           </main>

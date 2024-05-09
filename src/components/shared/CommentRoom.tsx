@@ -9,7 +9,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { useToast } from "../../components/ui"
 import { useGetPostById, useGetUsers, useSearchUsers } from "@/lib/react-query/queries"
 
 import { useEffect, useState } from "react"
@@ -18,7 +17,6 @@ import { ID, Query, Permission, Role} from 'appwrite';
 import {Trash2} from 'react-feather'
 import { useParams } from "react-router-dom"
 import { AuthProvider, useUserContext } from "@/context/AuthContext";
-import { multiFormatDateString } from "@/lib/utils"
 
 // Define the type for your message
 type Message = {
@@ -31,7 +29,6 @@ type Message = {
 }
 
 const ChatRoom = () => {
-    const { toast } = useToast();
     const { id } = useParams();
     const { data: post } = useGetPostById(id);
     const [messageBody, setMessageBody] = useState<string>('')
@@ -65,7 +62,7 @@ const ChatRoom = () => {
     const getMessages = async () => {
       const response = await databases.listDocuments(
           appwriteConfig.databaseId,
-          appwriteConfig.messagesCollectionId,
+          appwriteConfig.commentsCollectionId,
           [
               Query.orderDesc('$createdAt'),
               Query.limit(100),
@@ -79,12 +76,6 @@ const ChatRoom = () => {
     const handleSubmit = async (e: { preventDefault: () => void }) => {
       e.preventDefault()
 
-      // Check if the messageBody is not empty
-      if (messageBody.trim() === '') {
-        alert('Comment cannot be empty');
-        return;
-      }
-
       let payload = {
           user_id:user.id,  
           username:user.name,
@@ -94,7 +85,7 @@ const ChatRoom = () => {
 
       let response = await databases.createDocument(
           appwriteConfig.databaseId, 
-          appwriteConfig.messagesCollectionId, 
+          appwriteConfig.commentsCollectionId, 
           ID.unique(), 
           payload
       )
@@ -104,19 +95,10 @@ const ChatRoom = () => {
   }
     
     const deleteMessage = async (id: string) => {
-      await databases.deleteDocument(appwriteConfig.databaseId, appwriteConfig.messagesCollectionId, id);
+      await databases.deleteDocument(appwriteConfig.databaseId, appwriteConfig.commentsCollectionId, id);
    } 
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="outline"
-        style={{
-            backgroundColor: 'rgb(18,55,42)',
-        }}
-        >Chat With Others</Button>
-      </SheetTrigger>
-      <SheetContent className="bg-black" style={{ width: '80%', maxWidth: '700px' }}>
         <main className="container">
           <div className="room--container">
               <form id="message--form" onSubmit={handleSubmit}>
@@ -138,7 +120,7 @@ const ChatRoom = () => {
                 {messages.map(message => (
                     <div key={message.$id} className="message--wrapper">
                         <div className="message--header">
-                          <div className="flex items-center gap-3" style={{ marginTop: '24px' }}>
+                          <div className="flex items-center gap-3">
 
                             <img 
                               src={message.imageUrl ||
@@ -153,7 +135,7 @@ const ChatRoom = () => {
                                 ): (
                                     'Anonymous user'
                                 )}
-                                <small className="message-timestamp">{multiFormatDateString(message.$createdAt)}</small>
+                                <small className="message-timestamp">{new Date(message.$createdAt).toLocaleString()}</small>
                             </p>
                           </div>
                           {user.id === message.user_id && (
@@ -173,8 +155,6 @@ const ChatRoom = () => {
           
             </div>
           </main>
-      </SheetContent>
-    </Sheet>
   )
 }
 

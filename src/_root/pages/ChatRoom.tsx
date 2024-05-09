@@ -17,9 +17,11 @@ import { appwriteConfig, account, databases, client } from "@/lib/appwrite/confi
 import { ID, Query, Permission, Role} from 'appwrite';
 import {Trash2} from 'react-feather'
 import { useParams } from "react-router-dom"
+import { AuthProvider, useUserContext } from "@/context/AuthContext";
 
 // Define the type for your message
 type Message = {
+  username: any
   $id: string;
   $createdAt: number;
   body: string;
@@ -31,6 +33,7 @@ const ChatRoom = () => {
     const { data: post } = useGetPostById(id);
     const [messageBody, setMessageBody] = useState<string>('')
     const [messages, setMessages] = useState<Message[]>([])
+    const {user} = useUserContext()
 
     useEffect(() => {
       getMessages();
@@ -74,6 +77,8 @@ const ChatRoom = () => {
       e.preventDefault()
 
       let payload = {
+          user_id:user.id,  
+          username:user.name,
           body:messageBody
       }
 
@@ -85,14 +90,11 @@ const ChatRoom = () => {
       )
       console.log('CREATED:', response)
 
-      //setMessages(prevState => [response, ...prevState])
-
       setMessageBody('')
   }
     
     const deleteMessage = async (id: string) => {
       await databases.deleteDocument(appwriteConfig.databaseId, appwriteConfig.messagesCollectionId, id);
-      //setMessages(prevState => prevState.filter(message => message.$id !== id))
    } 
 
   return (
@@ -127,7 +129,15 @@ const ChatRoom = () => {
                     {messages.map(message => (
                       <div key={message.$id} className="message--wrapper">
                           <div className="message--header">
+                          <p className="flex flex-col"> 
+                            {message?.username ? (
+                                <span> {message?.username}</span>
+                            ): (
+                                'Anonymous user'
+                            )}
+                         
                             <small className="message-timestamp"> {new Date(message.$createdAt).toLocaleString()}</small>
+                        </p>
                                 <Trash2 
                                   className="delete--btn"
                                   onClick={() => {deleteMessage(message.$id)}}

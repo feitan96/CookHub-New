@@ -10,6 +10,7 @@ import ForgotPass from './_auth/forms/ForgotPass';
 
 import { Toaster } from "@/components/ui/toaster"
 import Discover from './_root/pages/Discover';
+import PasswordRecovery from './_auth/forms/PasswordRecovery';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
                 <Route path="/sign-in" element={<SigninForm />} />
                 <Route path="/sign-up" element={<SignupForm />} />
                 <Route path="/forgot-pass" element={<ForgotPass />} />
+                <Route path="/pass-recover" element={<PasswordRecovery />} />
               </Route>
 
               {/* Root layout routes */}

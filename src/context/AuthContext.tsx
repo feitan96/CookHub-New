@@ -39,6 +39,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const publicRoutes = ["/forgot-pass", "/pass-recover", "/sign-in", "/sign-up"];
+
   const checkAuthUser = async () => {
     setIsLoading(true);
     try {
@@ -68,12 +70,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const cookieFallback = localStorage.getItem("cookieFallback");
+    const currentPath = window.location.pathname;
     if (
       cookieFallback === "[]" ||
       cookieFallback === null ||
       cookieFallback === undefined
     ) {
-      navigate("/hero-page");
+      if (!publicRoutes.includes(currentPath)) {
+        navigate("/hero-page");
+      }
     }
 
     checkAuthUser();

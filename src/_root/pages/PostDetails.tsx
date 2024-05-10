@@ -295,7 +295,6 @@ const handleSubmit = async (e: { preventDefault: () => void }) => {
                                   alt={message.username} 
                                   className="user-image w-12 lg:h-12 rounded-full" 
                                 />
-
                                 <div>
                                   <p className="flex flex-row"> 
                                       {message?.username ? (

@@ -112,7 +112,7 @@ const SigninForm = () => {
           </p>
           <p className="text-center mt-2">
           <Link
-              to="/forgot-pass"
+              to="/pass-recover"
               className="text-primary-500 text-small-semibold ml-1">
               Forgot Password?
             </Link>

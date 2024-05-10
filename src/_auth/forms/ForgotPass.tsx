@@ -9,141 +9,114 @@ import { Button } from "@/components/ui/button";
 import Loader from "@/components/shared/Loader";
 import { useToast } from "@/components/ui/use-toast"
 
-import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/queries";
-import { SignupValidation } from "@/lib/validation";
+import { ResetPassValidation, SignupValidation } from "@/lib/validation";
 import { useUserContext } from "@/context/AuthContext";
+import { useState } from "react";
+import { account } from "@/lib/appwrite/config";
 
 const ForgotPass = () => {
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const { isLoading: isUserLoading } = useUserContext();
 
-  const form = useForm<z.infer<typeof SignupValidation>>({
-    resolver: zodResolver(SignupValidation),
+  const form = useForm<z.infer<typeof ResetPassValidation>>({
+    resolver: zodResolver(ResetPassValidation),
     defaultValues: {
-      name: "",
-      username: "",
-      email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
-  // Queries
-  const { mutateAsync: createUserAccount, isLoading: isCreatingAccount } = useCreateUserAccount();
-  const { mutateAsync: signInAccount, isLoading: isSigningInUser } = useSignInAccount();
+  const navigate = useNavigate();
 
-  // Handler
-  const handleSignup = async (user: z.infer<typeof SignupValidation>) => {
-    try {
-      const newUser = await createUserAccount(user);
+  const [password, setPassword] = useState({
+    newPassword: '',
+    repeatedPassword: '',
+  })
 
-      if (!newUser) {
-        if (newUser === null) {
-          toast({ title: "Email is already used. Please use a different email.", });
-        } else {
-          toast({ title: "Sign up failed. Please try again.", });
-        }
-        return;
-      }
-
-      const session = await signInAccount({
-        email: user.email,
-        password: user.password,
-      });
-
-      if (!session) {
-        toast({ title: "Something went wrong. Please login your new account", });
-        
-        navigate("/sign-in");
-        
-        return;
-      }
-
-      const isLoggedIn = await checkAuthUser();
-
-      if (isLoggedIn) {
-        form.reset();
-
-        navigate("/");
-      } else {
-        toast({ title: "Login failed. Please try again.", });
-        
-        return;
-      }
-    } catch (error) {
-      console.log({ error });
+  const changePassword = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+  
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('userId');
+    const secret = urlParams.get('secret'); 
+  
+    if (userId && secret) {
+      await account.updateRecovery(
+        userId,
+        secret,
+        password.newPassword,
+        password.repeatedPassword
+      )
+      navigate("/sign-in");
+    } else {
+      // Handle the case where userId or secret is null
+      console.error('userId or secret is null');
     }
-  };
+  }
+  
 
   return (
     <Form {...form}>
       <div className="sm:w-420 flex-center flex-col">
+      <img src="/assets/images/cookhub.png" alt="logo" />
         
         <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12">
-          Forgot Password
+          Password Reset
         </h2>
         <p className="text-white small-medium md:base-regular mt-2">
-          Check your email and input the code we sent.
+          Input your new password and confirm.
         </p>
 
         <form
-          onSubmit={form.handleSubmit(handleSignup)}
           className="flex flex-col gap-5 w-full mt-4">
+
           <FormField
             control={form.control}
-            name="name"
+            name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="shad-form_label">Code</FormLabel>
+                <FormLabel className="shad-form_label">Password</FormLabel>
                 <FormControl>
-                  <Input type="text" className="shad-input" {...field} />
+                  <Input 
+                  type="password" 
+                  className="shad-input" 
+                  onChange={(e) =>{
+                    setPassword({
+                      ...password,
+                      newPassword : e.target.value
+                    })
+                  }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="shad-form_label">Confirm Password</FormLabel>
+                <FormControl>
+                  <Input 
+                  type="password" 
+                  className="shad-input" 
+                  onChange={(e) =>{
+                    setPassword({
+                      ...password,
+                      repeatedPassword : e.target.value
+                    })
+                  }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="shad-form_label">New Password</FormLabel>
-                <FormControl>
-                  <Input type="text" className="shad-input" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="shad-form_label">Confirm New Password</FormLabel>
-                <FormControl>
-                  <Input type="text" className="shad-input" {...field} />
-                </FormControl>
-                {/* Display error message if email format is incorrect */}
-                {form.formState.errors.email && (
-                  <FormMessage className="text-red-500">
-                    {form.formState.errors.email.message}
-                  </FormMessage>
-                )}
-              </FormItem>
-            )}
-          />
-
-          <Button type="submit" className="bg-[rgb(18,55,42)]">
-            {isCreatingAccount || isSigningInUser || isUserLoading ? (
-              <div className="flex-center gap-2">
-                <Loader /> Loading...
-              </div>
-            ) : (
-              "Reset Password"
-            )}
+          <Button type="submit" className="bg-[rgb(18,55,42)]" onClick={(e) => changePassword(e)}>
+              Reset Password
           </Button>
 
           <p className="text-small-regular text-light-2 text-center mt-2">

@@ -42,3 +42,12 @@ export const PostValidation = z.object({
 export const CommentValidation = z.object({
   comment: z.string().min(4, { message: "Minimum 4 characters." }).max(2200, { message: "Maximum 2,200 caracters" }),
 });
+
+
+export const PassRecoveryValidation = z.object({
+  email: z.string().email(),
+});
+export const ResetPassValidation = z.object({
+  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+  confirmPassword: z.string().min(8, { message: "Password must be at least 8 characters." }),
+});

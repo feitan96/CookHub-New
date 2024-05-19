@@ -18,7 +18,7 @@ import { useParams } from "react-router-dom"
 const ShareLink = () => {
   const { id } = useParams();
   const { data: post } = useGetPostById(id) // use the hook to get the  post
-  const postLink = `http://localhost:5173/posts/${post?.id}` // use the post's id in the link
+  const postLink = window.location.href;
 
   return (
     <Dialog>

@@ -1,23 +1,18 @@
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
-  SheetClose,
   SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { useToast } from "../../components/ui"
-import { useGetPostById, useGetUsers, useSearchUsers } from "@/lib/react-query/queries"
+import { useGetPostById } from "@/lib/react-query/queries"
 
 import { useEffect, useState } from "react"
-import { appwriteConfig, account, databases, client } from "@/lib/appwrite/config";
-import { ID, Query, Permission, Role} from 'appwrite';
+import { appwriteConfig, databases, client } from "@/lib/appwrite/config";
+import { ID, Query} from 'appwrite';
 import {Trash2} from 'react-feather'
 import { useParams } from "react-router-dom"
-import { AuthProvider, useUserContext } from "@/context/AuthContext";
+import { useUserContext } from "@/context/AuthContext";
 import { multiFormatDateString } from "@/lib/utils"
 
 // Define the type for your message
@@ -33,7 +28,7 @@ type Message = {
 const ChatRoom = () => {
     const { toast } = useToast();
     const { id } = useParams();
-    const { data: post } = useGetPostById(id);
+    useGetPostById(id);
     const [messageBody, setMessageBody] = useState<string>('')
     const [messages, setMessages] = useState<Message[]>([])
     const {user} = useUserContext()
@@ -43,16 +38,17 @@ const ChatRoom = () => {
     
       const unsubscribe = client.subscribe(`databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messagesCollectionId}.documents`, response => {
 
-          if(response.events.includes("databases.*.collections.*.documents.*.create")){
-              console.log('A MESSAGE WAS CREATED')
-              setMessages(prevState => [response.payload, ...prevState])
-          }
-
-          if(response.events.includes("databases.*.collections.*.documents.*.delete")){
-              console.log('A MESSAGE WAS DELETED!!!')
-              setMessages(prevState => prevState.filter(message => message.$id !== response.payload.$id))
-          }
+        if(response.events.includes("databases.*.collections.*.documents.*.create")){
+            console.log('A MESSAGE WAS CREATED')
+            setMessages(prevState => [response.payload as Message, ...prevState])
+        }
+      
+        if(response.events.includes("databases.*.collections.*.documents.*.delete")){
+            console.log('A MESSAGE WAS DELETED!!!')
+            setMessages(prevState => prevState.filter(message => message.$id !== (response.payload as Message).$id))
+        }
       });
+      
 
 
       console.log('unsubscribe:', unsubscribe)
@@ -72,7 +68,7 @@ const ChatRoom = () => {
           ]
       )
       console.log(response.documents)
-      setMessages(response.documents)
+      setMessages(response.documents.map(doc => doc as unknown as Message))
   }
 
 
@@ -156,7 +152,7 @@ const ChatRoom = () => {
                                 ): (
                                     'Anonymous user'
                                 )}
-                                <p className="message-timestamp">{multiFormatDateString(message.$createdAt)}</p>
+                                <p className="message-timestamp">{multiFormatDateString(message.$createdAt.toString())}</p>
                             </p>
                           </div>
                           {user.id === message.user_id && (

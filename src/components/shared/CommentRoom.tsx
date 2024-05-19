@@ -1,22 +1,11 @@
-import { Button } from "@/components/ui/button"
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-import { useGetPostById, useGetUsers, useSearchUsers } from "@/lib/react-query/queries"
+import { useGetPostById } from "@/lib/react-query/queries"
 
 import { useEffect, useState } from "react"
-import { appwriteConfig, account, databases, client } from "@/lib/appwrite/config";
-import { ID, Query, Permission, Role} from 'appwrite';
+import { appwriteConfig, databases, client } from "@/lib/appwrite/config";
+import { ID, Query} from 'appwrite';
 import {Trash2} from 'react-feather'
 import { useParams } from "react-router-dom"
-import { AuthProvider, useUserContext } from "@/context/AuthContext";
+import { useUserContext } from "@/context/AuthContext";
 
 // Define the type for your message
 type Message = {
@@ -30,7 +19,7 @@ type Message = {
 
 const ChatRoom = () => {
     const { id } = useParams();
-    const { data: post } = useGetPostById(id);
+    useGetPostById(id);
     const [messageBody, setMessageBody] = useState<string>('')
     const [messages, setMessages] = useState<Message[]>([])
     const {user} = useUserContext()
@@ -42,12 +31,13 @@ const ChatRoom = () => {
 
           if(response.events.includes("databases.*.collections.*.documents.*.create")){
               console.log('A MESSAGE WAS CREATED')
-              setMessages(prevState => [response.payload, ...prevState])
+              setMessages(prevState => [response.payload as Message, ...prevState])
           }
 
           if(response.events.includes("databases.*.collections.*.documents.*.delete")){
               console.log('A MESSAGE WAS DELETED!!!')
-              setMessages(prevState => prevState.filter(message => message.$id !== response.payload.$id))
+              setMessages(prevState => prevState.filter(message => message.$id !== (response.payload as Message).$id))
+
           }
       });
 
@@ -69,30 +59,35 @@ const ChatRoom = () => {
           ]
       )
       console.log(response.documents)
-      setMessages(response.documents)
+      setMessages(response.documents.map(doc => doc as unknown as Message))
+
   }
 
 
-    const handleSubmit = async (e: { preventDefault: () => void }) => {
-      e.preventDefault()
-
-      let payload = {
-          user_id:user.id,  
-          username:user.name,
-          body:messageBody,
-          imageUrl:user.imageUrl
-      }
-
-      let response = await databases.createDocument(
-          appwriteConfig.databaseId, 
-          appwriteConfig.commentsCollectionId, 
-          ID.unique(), 
-          payload
-      )
-      console.log('CREATED:', response)
-
-      setMessageBody('')
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault()
+  
+    let payload = {
+        user_id:user.id,  
+        username:user.name,
+        body:messageBody,
+        imageUrl:user.imageUrl
+    }
+  
+    let response = await databases.createDocument(
+        appwriteConfig.databaseId, 
+        appwriteConfig.commentsCollectionId, 
+        ID.unique(), 
+        payload
+    )
+    console.log('CREATED:', response)
+  
+    // Update the state of the messages
+    setMessages(prevState => [(response as unknown as Message), ...prevState])
+  
+    setMessageBody('')
   }
+  
     
     const deleteMessage = async (id: string) => {
       await databases.deleteDocument(appwriteConfig.databaseId, appwriteConfig.commentsCollectionId, id);

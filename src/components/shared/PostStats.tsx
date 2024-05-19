@@ -35,7 +35,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   const { mutate: savePost } = useSavePost();
   const { mutate: flagPost } = useFlagPost();
   const { mutate: deleteSavePost } = useDeleteSavedPost();
-  const { mutate: deleteFlagPost } = useDeleteFlaggedPost();
+  useDeleteFlaggedPost();
   const { mutate: ratePostMutation } = useRatePost();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 

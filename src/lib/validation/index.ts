@@ -48,6 +48,6 @@ export const PassRecoveryValidation = z.object({
   email: z.string().email(),
 });
 export const ResetPassValidation = z.object({
-  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
-  confirmPassword: z.string().min(8, { message: "Password must be at least 8 characters." }),
+  newPassword: z.string().min(8, { message: "Password must be at least 8 characters." }),
+  repeatedPassword: z.string().min(8, { message: "Passwords must match." }),
 });

@@ -63,11 +63,11 @@ const PostDetails = () => {
         [
             Query.orderDesc('$createdAt'),
             Query.limit(100),
-            Query.equal('post_id', id)
+            Query.equal('post_id', id || '')
         ]
     )
     console.log(response.documents)
-    setMessages(response.documents)
+    setMessages(response.documents.map(doc => doc as unknown as Message))
 }
 
 
@@ -98,12 +98,14 @@ const handleSubmit = async (e: { preventDefault: () => void }) => {
   toast({ title: "Comment Posted", });
 
   setMessageBody('')
+  window.location.reload();
 }
 
   
   const deleteMessage = async (id: string) => {
     await databases.deleteDocument(appwriteConfig.databaseId, appwriteConfig.commentsCollectionId, id);
     toast({ title: "Comment Deleted", });
+    window.location.reload();
   } 
   
   if (!id) {
@@ -302,7 +304,7 @@ const handleSubmit = async (e: { preventDefault: () => void }) => {
                                       ): (
                                           'Anonymous user'
                                       )}
-                                      <p className="message-timestamp">{multiFormatDateString(message.$createdAt)}</p>
+                                      <p className="message-timestamp">{multiFormatDateString(message.$createdAt.toString())}</p>
                                   </p>
                                 </div>
                               </div>

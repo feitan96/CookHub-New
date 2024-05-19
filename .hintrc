@@ -10,6 +10,13 @@
           "width: fit-content"
         ]
       }
+    ],
+    "no-inline-styles": "off",
+    "axe/structure": [
+      "default",
+      {
+        "list": "off"
+      }
     ]
   }
 }

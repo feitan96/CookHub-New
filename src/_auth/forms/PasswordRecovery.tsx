@@ -1,12 +1,11 @@
 import * as z from "zod"
 import { useForm } from "react-hook-form"
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod"
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button";
-import Loader from "@/components/shared/Loader";
 import { useToast } from "@/components/ui/use-toast"
 import { PassRecoveryValidation } from "@/lib/validation";
 import { useState } from "react";
@@ -30,6 +29,7 @@ const ForgotPass = () => {
   
     await account.createRecovery(userEmail, 'http://localhost:5173/forgot-pass');
     console.log('Email has been sent')
+    toast({ title: "Email has been sent" });
   }
   
   
@@ -52,7 +52,7 @@ const ForgotPass = () => {
           <FormField
             control={form.control}
             name="email"
-            render={({ field }) => (
+            render={({ }) => (
               <FormItem>
                 <FormLabel className="shad-form_label">Email</FormLabel>
                 <FormControl>

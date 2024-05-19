@@ -6,23 +6,22 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button";
-import Loader from "@/components/shared/Loader";
 import { useToast } from "@/components/ui/use-toast"
 
-import { ResetPassValidation, SignupValidation } from "@/lib/validation";
+import { ResetPassValidation } from "@/lib/validation";
 import { useUserContext } from "@/context/AuthContext";
 import { useState } from "react";
 import { account } from "@/lib/appwrite/config";
 
 const ForgotPass = () => {
   const { toast } = useToast();
-  const { isLoading: isUserLoading } = useUserContext();
+  useUserContext();
 
   const form = useForm<z.infer<typeof ResetPassValidation>>({
     resolver: zodResolver(ResetPassValidation),
     defaultValues: {
-      password: "",
-      confirmPassword: "",
+      newPassword: "",
+      repeatedPassword: "",
     },
   });
 
@@ -39,6 +38,21 @@ const ForgotPass = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const userId = urlParams.get('userId');
     const secret = urlParams.get('secret'); 
+
+
+    // Check if the new password is between 8 and 265 characters long
+    if (password.newPassword.length < 8 || password.newPassword.length > 265) {
+      // If it's not, display a toast and return
+      toast({ title: "Password must be between 8 and 265 characters long." });
+      return;
+    }
+
+    // Check if the new password and the repeated password match
+    if (password.newPassword !== password.repeatedPassword) {
+      // If they don't match, display a toast and return
+      toast({ title: "Passwords do not match. Please try again." });
+      return;
+    }
   
     if (userId && secret) {
       await account.updateRecovery(
@@ -47,9 +61,11 @@ const ForgotPass = () => {
         password.newPassword,
         password.repeatedPassword
       )
+      toast({ title: "Password reset successful. You can now log in with your new password." });
       navigate("/sign-in");
     } else {
       // Handle the case where userId or secret is null
+      toast({ title: "userId or secret is null" });
       console.error('userId or secret is null');
     }
   }
@@ -72,8 +88,8 @@ const ForgotPass = () => {
 
           <FormField
             control={form.control}
-            name="password"
-            render={({ field }) => (
+            name="newPassword"
+            render={({ }) => (
               <FormItem>
                 <FormLabel className="shad-form_label">Password</FormLabel>
                 <FormControl>
@@ -94,8 +110,8 @@ const ForgotPass = () => {
           />
           <FormField
             control={form.control}
-            name="password"
-            render={({ field }) => (
+            name="repeatedPassword"
+            render={({ }) => (
               <FormItem>
                 <FormLabel className="shad-form_label">Confirm Password</FormLabel>
                 <FormControl>

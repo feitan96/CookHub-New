@@ -1,14 +1,13 @@
 import { Models } from "appwrite";
 import { Link } from "react-router-dom";
-import { Button } from "../ui/button";
-import { useUserContext } from "@/context/AuthContext"; // Import useUserContext
+import { useUserContext } from "@/context/AuthContext"; 
 
 type UserCardProps = {
   user: Models.Document;
 };
 
 const UserCard = ({ user }: UserCardProps) => {
-  const { user: loggedInUser } = useUserContext(); // Get the logged-in user
+  useUserContext(); // Get the logged-in user
 
   return (
     <Link to={`/profile/${user.$id}`} className="user-card" style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)'}}>

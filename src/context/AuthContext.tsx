@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       cookieFallback === undefined
     ) {
       if (!publicRoutes.includes(currentPath)) {
-        navigate("/hero-page");
+        navigate("/sign-in");
       }
     }
 

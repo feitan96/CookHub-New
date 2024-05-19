@@ -15,12 +15,6 @@ import PasswordRecovery from './_auth/forms/PasswordRecovery';
 function App() {
   return (
     <>
-      <Routes>
-        {/* Set HeroPage as the default route */}
-        <Route path="/hero-page" element={<HeroPage />} />
-        
-        {/* Other routes wrapped in main with flex h-screen */}
-        <Route path="*" element={
           <main className="flex h-screen">
             <Routes>
               {/* Auth routes */}
@@ -29,6 +23,7 @@ function App() {
                 <Route path="/sign-up" element={<SignupForm />} />
                 <Route path="/forgot-pass" element={<ForgotPass />} />
                 <Route path="/pass-recover" element={<PasswordRecovery />} />
+                <Route path="/hero-page" element={<HeroPage/>}> </Route>
               </Route>
 
               {/* Root layout routes */}
@@ -50,8 +45,6 @@ function App() {
             </Routes>
             <Toaster />
           </main>
-        } />
-      </Routes>
     </>
   );
 }

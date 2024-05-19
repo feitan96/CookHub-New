@@ -87,7 +87,7 @@ function HeroPage() {
             </div>
             {displayContent === 'about' && <img src={about} alt="About Us" />}
             {displayContent === 'developers' && <img src={developers} alt="Developers"/>}
-            {displayContent === 'blog' && <div>Content for contact us.</div>}
+            {displayContent === 'blog' && <div></div>}
         </div>
     );
 }
